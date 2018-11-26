@@ -63,6 +63,13 @@ function playertag.set(player, type, color)
 	return old_set(player, type, color)
 end
 
+local old_add_gauge = gauges.add_HP_gauge
+function gauges.add_HP_gauge(name)
+	if not minetest.check_player_privs(name, {fly = true}) and minetest.check_player_privs(name, {interact = true}) then
+		old_add_gauge(name)
+	end
+end
+
 --table.insert(minetest.registered_on_joinplayers, 1, function(player)
 --	local name = player:get_player_name()
 --	local info = minetest.get_player_information(name)
