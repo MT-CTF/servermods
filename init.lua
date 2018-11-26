@@ -57,7 +57,7 @@ end)
 local old_set = playertag.set
 function playertag.set(player, type, color)
 	local privs = minetest.get_player_privs(player:get_player_name())
-	if privs.interact and not privs.fly then
+	if privs.interact or not privs.fly then
 		return old_set(player, type, color)
 	end
 end
@@ -65,7 +65,7 @@ end
 local old_add_gauge = gauges.add_HP_gauge
 function gauges.add_HP_gauge(name)
 	local privs = minetest.get_player_privs(name)
-	if privs.interact and not privs.fly then
+	if privs.interact or not privs.fly then
 		return old_add_gauge(name)
 	end
 end
