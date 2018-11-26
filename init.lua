@@ -56,17 +56,17 @@ end)
 
 local old_set = playertag.set
 function playertag.set(player, type, color)
-	if minetest.check_player_privs(player, { fly = true }) and not minetest.check_player_privs(player, { interact = true }) then
-		return
+	local privs = minetest.get_player_privs(player:get_player_name())
+	if privs.interact and not privs.fly then
+		return old_set(player, type, color)
 	end
-
-	return old_set(player, type, color)
 end
 
 local old_add_gauge = gauges.add_HP_gauge
 function gauges.add_HP_gauge(name)
-	if not minetest.check_player_privs(name, {fly = true}) and minetest.check_player_privs(name, {interact = true}) then
-		old_add_gauge(name)
+	local privs = minetest.get_player_privs(name)
+	if privs.interact and not privs.fly then
+		return old_add_gauge(name)
 	end
 end
 
