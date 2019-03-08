@@ -1,4 +1,5 @@
 ctf_stats
+ctf_match
 email
 filter
 ctf_playertag
