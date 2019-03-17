@@ -5,7 +5,7 @@ minetest.register_privilege("spectate", {
 })
 
 ctf_map.can_cross = function(player)
-	return minetest.check_player_privs(name, {spectate = true})
+	return minetest.check_player_privs(player, {spectate = true})
 end
 
 minetest.register_chatcommand("watch", {
