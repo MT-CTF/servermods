@@ -196,3 +196,25 @@ minetest.register_on_joinplayer(function(player)
 		hide_player(player)
 	end, player:get_player_name())
 end)
+
+-- /whereis chat-command
+minetest.register_chatcommand("whereis", {
+	params = "<name>",
+	description = "Get location of player",
+	privs = { kick = true, ban = true, fly = true },
+	func = function(name, param)
+		if not param or param:trim() == "" then
+			return false, "Invalid parameters. See /help whereis"
+		end
+
+		param = param:trim()
+		local player = minetest.get_player_by_name(param)
+		if not player then
+			return false, param .. " is not online"
+		end
+			
+		local pos = player:get_pos()
+		return true, string.format(param .. " is at %d,%d,%d",
+				pos.x, pos.y, pos.z)
+	end
+}
