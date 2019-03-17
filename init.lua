@@ -221,4 +221,4 @@ minetest.register_chatcommand("whereis", {
 		return true, string.format(param .. " is at %d,%d,%d",
 				pos.x, pos.y, pos.z)
 	end
-}
+})
