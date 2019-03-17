@@ -4,6 +4,10 @@ minetest.register_privilege("spectate", {
 	description = "Can spectate other players"
 })
 
+ctf_map.can_cross = function(player)
+	return minetest.check_player_privs(name, {spectate = true})
+end
+
 minetest.register_chatcommand("watch", {
 	params = "<name>",
 	description = "Spectate another player",
@@ -212,7 +216,7 @@ minetest.register_chatcommand("whereis", {
 		if not player then
 			return false, param .. " is not online"
 		end
-			
+
 		local pos = player:get_pos()
 		return true, string.format(param .. " is at %d,%d,%d",
 				pos.x, pos.y, pos.z)
