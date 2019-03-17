@@ -205,7 +205,7 @@ end)
 minetest.register_chatcommand("whereis", {
 	params = "<name>",
 	description = "Get location of player",
-	privs = { kick = true, ban = true, fly = true },
+	privs = { spectate = true },
 	func = function(name, param)
 		if not param or param:trim() == "" then
 			return false, "Invalid parameters. See /help whereis"
