@@ -156,8 +156,8 @@ filter.register_on_violation(function(name, message, total_violations, violation
 	end
 end)
 
-local old_set = playertag.set
-function playertag.set(player, type, color)
+local old_set = ctf_playertag.set
+function ctf_playertag.set(player, type, color)
 	local privs = minetest.get_player_privs(player:get_player_name())
 	if not privs.spectate then
 		return old_set(player, type, color)
@@ -195,7 +195,7 @@ minetest.register_on_joinplayer(function(player)
 			return
 		end
 
-		old_set(player, playertag.TYPE_BUILTIN, { a=0, r=255, g=255, b=255 })
+		old_set(player, ctf_playertag.TYPE_BUILTIN, { a=0, r=255, g=255, b=255 })
 
 		hide_player(player)
 	end, player:get_player_name())
