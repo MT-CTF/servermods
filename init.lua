@@ -236,9 +236,6 @@ minetest.register_chatcommand("s", {
             minetest.chat_send_player(toname, minetest.colorize("#ff6600",
                     "«" .. name .. "» " .. param))
             minetest.log("action", "CHAT[STAFFCHANNEL]: <" .. name .. "> " .. param)
-		if minetest.global_exists("chatplus") then
-			chatplus.log("[STAFFCHANNEL]: <" .. name .. "> " .. param)
-		end
         end
     end
 end
