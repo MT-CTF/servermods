@@ -227,7 +227,7 @@ local staff = {}
 minetest.register_chatcommand("s", {
 	params = "<msg>",
 	description = "Send a message on the staff channel",
-	privs = { ban = true },
+	privs = { kick = true, ban = true },
 	func = function(name, param)
 		for _, toname in pairs(staff) do
 			minetest.chat_send_player(toname, minetest.colorize("#ff9900",
