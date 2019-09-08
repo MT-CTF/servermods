@@ -1,7 +1,8 @@
 local spectators = {}
 
 minetest.register_privilege("spectate", {
-	description = "Can spectate other players"
+	description = "Can spectate other players",
+	give_to_singleplayer = false
 })
 
 ctf_map.can_cross = function(player)
