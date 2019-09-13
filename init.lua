@@ -89,8 +89,7 @@ minetest.register_on_leaveplayer(function(player)
 		-- Target left
 		elseif name == tname then
 			minetest.chat_send_player(sname, minetest.colorize("#4444CC",
-							"Target left. Stopped spectating " ..
-							tname .. "!"))
+					"Target left. Stopped spectating " .. tname .. "!"))
 			local spectator = minetest.get_player_by_name(sname)
 			if spectator and spectators[sname].hud then
 				spectator:hud_remove(spectators[sname].hud)
@@ -196,6 +195,7 @@ minetest.register_on_joinplayer(function(player)
 			return
 		end
 
+		player:set_armor_groups({immortal = 1})
 		old_set(player, ctf_playertag.TYPE_BUILTIN, { a=0, r=255, g=255, b=255 })
 
 		hide_player(player)
