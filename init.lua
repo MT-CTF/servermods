@@ -5,6 +5,10 @@ minetest.register_privilege("spectate", {
 	give_to_singleplayer = false
 })
 
+if irc then
+	irc.bot_commands["whereis"] = nil
+end
+
 ctf_map.can_cross = function(player)
 	return minetest.check_player_privs(player, {spectate = true})
 end
