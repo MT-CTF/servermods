@@ -65,7 +65,7 @@ minetest.register_chatcommand("unwatch", {
 	params = "",
 	description = "Stop spectating another player",
 	privs = {spectate = true},
-	func = function(name, param)
+	func = function(name)
 		local player = minetest.get_player_by_name(name)
 		if not player then
 			return false, "You should be online to run this command!"
@@ -106,17 +106,17 @@ end)
 
 minetest.register_privilege("ctf_server")
 minetest.override_chatcommand("ctf_queue_restart", {
-        privs = { ctf_server = true },
+	privs = { ctf_server = true },
 })
 minetest.override_chatcommand("ctf_unqueue_restart", {
-        privs = { ctf_server = true },
+	privs = { ctf_server = true },
 })
 
 
 minetest.override_chatcommand("admin", {
-        func = function(name, params)
-                return true, "CTF was created by rubenwardy, and this is his server. Please use /report for any issues."
-        end
+	func = function()
+		return true, "CTF was created by rubenwardy, and this is his server. Please use /report for any issues."
+	end
 })
 
 local function canPM(name)
@@ -137,17 +137,17 @@ minetest.override_chatcommand("msg", {
 
 local oldmail = minetest.registered_chatcommands["mail"].func
 minetest.override_chatcommand("mail", {
-        func = function(name, params)
-                if canPM(name) then
-                        return oldmail(name, params)
-                else
-                        return false, "You need at least 500 score to private message!"
-                end
-        end
+	func = function(name, params)
+		if canPM(name) then
+			return oldmail(name, params)
+		else
+			return false, "You need at least 500 score to private message!"
+		end
+	end
 })
 
 
-filter.register_on_violation(function(name, message, total_violations, violations)
+filter.register_on_violation(function(name)
 	local player = minetest.get_player_by_name(name)
 	if player then
 		local hp = player:get_hp()
