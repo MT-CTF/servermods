@@ -231,7 +231,7 @@ minetest.register_chatcommand("s", {
 	func = function(name, param)
 		for _, toname in pairs(staff) do
 			minetest.chat_send_player(toname, minetest.colorize("#ff9900",
-				"«" .. name .. "» " .. param))
+				"#" .. name .. ": " .. param))
 			minetest.log("action", "CHAT [STAFFCHANNEL]: <" .. name .. "> " .. param)
 		end
 	end
