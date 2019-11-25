@@ -179,12 +179,13 @@ end
 
 local function hide_player(player)
 	local prop = {
-		visual_size = {x = 0, y = 0},
-		collisionbox = {0,0,0,0,0,0},
+		visual_size  = { x = 0, y = 0 },
+		collisionbox = { 0,0,0, 0,0,0 },
 		makes_footstep_sound = false
 	}
 
 	player:set_properties(prop)
+	player:set_armor_groups({ immortal = 1 })
 	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}})
 end
 
