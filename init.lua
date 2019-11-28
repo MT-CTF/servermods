@@ -24,7 +24,7 @@ minetest.register_chatcommand("watch", {
 		end
 
 		if not param or param:trim() == "" then
-			return false, "Invalid parameters, see /help spectate"
+			return false, "Invalid parameters, see /help watch"
 		end
 
 		param = param:trim()
