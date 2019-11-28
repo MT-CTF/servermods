@@ -2,7 +2,29 @@ local spectators = {}
 
 minetest.register_privilege("spectate", {
 	description = "Can spectate other players",
-	give_to_singleplayer = false
+	give_to_singleplayer = false,
+	on_grant = function(name)
+		minetest.after(0, function()
+			local privs = minetest.get_player_privs(name)
+			privs.fly    = true
+			privs.fast   = true
+			privs.noclip = true
+			minetest.set_player_privs(name, privs)
+		end)
+	end,
+	on_revoke = function(name)
+		minetest.after(1, function()
+			local privs = minetest.get_player_privs(name)
+			if privs.server or privs.ctf_admin then
+				return
+			end
+
+			privs.fly    = false
+			privs.fast   = false
+			privs.noclip = false
+			minetest.set_player_privs(name, privs)
+		end)
+	end
 })
 
 if irc then
@@ -57,6 +79,7 @@ minetest.register_chatcommand("watch", {
 			})
 		end
 		player:set_attach(target, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+
 		return true, minetest.colorize("#4444CC", hud_text)
 	end
 })
