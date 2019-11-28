@@ -85,15 +85,15 @@ minetest.register_chatcommand("unwatch", {
 
 minetest.register_on_leaveplayer(function(player)
 	local name = player:get_player_name()
-	for sname, tname in pairs(spectators) do
+	for sname, spec in pairs(spectators) do
 		-- Spectator left
 		if name == sname then
 			spectators[sname] = nil
 			return
 		-- Target left
-		elseif name == tname then
+		elseif name == spec.target then
 			minetest.chat_send_player(sname, minetest.colorize("#4444CC",
-					"Target left. Stopped spectating " .. tname .. "!"))
+					"Target left. Stopped spectating " .. spec.target .. "!"))
 			local spectator = minetest.get_player_by_name(sname)
 			if spectator and spectators[sname].hud then
 				spectator:hud_remove(spectators[sname].hud)
