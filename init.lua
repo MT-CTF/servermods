@@ -230,7 +230,7 @@ minetest.register_chatcommand("whereis", {
 })
 
 local staff = {}
-minetest.register_chatcommand("s", {
+minetest.register_chatcommand("st", {
 	params = "<msg>",
 	description = "Send a message on the staff channel",
 	privs = { kick = true, ban = true },
@@ -238,7 +238,7 @@ minetest.register_chatcommand("s", {
 		for _, toname in pairs(staff) do
 			minetest.chat_send_player(toname, minetest.colorize("#ff9900",
 				"<" .. name .. "> " .. param))
-			minetest.log("action", "CHAT [STAFFCHANNEL]: <" .. name .. "> " .. param)
+			minetest.log("action", "CHAT [STAFF CHANNEL]: <" .. name .. "> " .. param)
 		end
 	end
 })
