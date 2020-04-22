@@ -5,14 +5,6 @@ minetest.register_privilege("spectate", {
 	give_to_singleplayer = false
 })
 
-if irc then
-	irc.bot_commands["whereis"] = nil
-end
-
-ctf_map.can_cross = function(player)
-	return minetest.check_player_privs(player, {spectate = true})
-end
-
 minetest.register_chatcommand("watch", {
 	params = "<name>",
 	description = "Spectate another player",
@@ -104,62 +96,6 @@ minetest.register_on_leaveplayer(function(player)
 	end
 end)
 
-minetest.register_privilege("ctf_server")
-minetest.override_chatcommand("ctf_queue_restart", {
-	privs = { ctf_server = true },
-})
-minetest.override_chatcommand("ctf_unqueue_restart", {
-	privs = { ctf_server = true },
-})
-
-
-minetest.override_chatcommand("admin", {
-	func = function()
-		return true, "CTF was created by rubenwardy, and this is his server. Please use /report for any issues."
-	end
-})
-
-local function canPM(name)
-	return minetest.check_player_privs(name, {kick=true}) or ctf_stats.player(name).score > 500
-end
-
-local old = minetest.registered_chatcommands["msg"].func
-minetest.override_chatcommand("msg", {
-	func = function(name, params)
-		if canPM(name) then
-			return old(name, params)
-		else
-			return false, "You need at least 500 score to private message!"
-		end
-	end
-})
-
-
-local oldmail = minetest.registered_chatcommands["mail"].func
-minetest.override_chatcommand("mail", {
-	func = function(name, params)
-		if canPM(name) then
-			return oldmail(name, params)
-		else
-			return false, "You need at least 500 score to private message!"
-		end
-	end
-})
-
-
-filter.register_on_violation(function(name)
-	local player = minetest.get_player_by_name(name)
-	if player then
-		local hp = player:get_hp()
-		if hp > 3*2 then
-			hp = hp - 3*2
-		else
-			hp = 1
-		end
-		player:set_hp(hp)
-	end
-end)
-
 local old_set = ctf_playertag.set
 function ctf_playertag.set(player, type, color)
 	local privs = minetest.get_player_privs(player:get_player_name())
@@ -207,6 +143,10 @@ minetest.register_on_joinplayer(function(player)
 	end, player:get_player_name())
 end)
 
+ctf_map.can_cross = function(player)
+	return minetest.check_player_privs(player, {spectate = true})
+end
+
 -- /whereis chat-command
 minetest.register_chatcommand("whereis", {
 	params = "<name>",
@@ -228,31 +168,3 @@ minetest.register_chatcommand("whereis", {
 				pos.x, pos.y, pos.z)
 	end
 })
-
-local staff = {}
-minetest.register_chatcommand("st", {
-	params = "<msg>",
-	description = "Send a message on the staff channel",
-	privs = { kick = true, ban = true },
-	func = function(name, param)
-		for _, toname in pairs(staff) do
-			minetest.chat_send_player(toname, minetest.colorize("#ff9900",
-				"<" .. name .. "> " .. param))
-			minetest.log("action", "CHAT [STAFF CHANNEL]: <" .. name .. "> " .. param)
-		end
-	end
-})
-
-minetest.register_on_joinplayer(function(player)
-	if minetest.check_player_privs(player, { kick = true, ban = true }) then
-		table.insert(staff, player:get_player_name())
-	end
-end)
-
-minetest.register_on_leaveplayer(function(player)
-	local name = player:get_player_name()
-	local idx = table.indexof(staff, name)
-	if idx ~= -1 then
-		table.remove(staff, idx)
-	end
-end)
