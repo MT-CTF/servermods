@@ -2,7 +2,8 @@ local spectators = {}
 
 minetest.register_privilege("spectate", {
 	description = "Can spectate other players",
-	give_to_singleplayer = false
+	give_to_singleplayer = false,
+	give_to_admin = true,
 })
 
 minetest.register_chatcommand("watch", {
