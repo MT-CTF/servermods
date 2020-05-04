@@ -18,3 +18,4 @@ read_globals = {
 
 files["server_chat/staff_channel.lua"].read_globals = { "table" }
 files["spectator_mode/init.lua"].globals = { "ctf_map" }
+files["spectator_mode/init.lua"].ignore = { "player" }
