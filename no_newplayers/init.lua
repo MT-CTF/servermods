@@ -10,7 +10,7 @@ minetest.register_on_prejoinplayer(function(name, ip)
 end)
 
 minetest.register_chatcommand("no_newplayers", {
-	description = "Toggle/Check wether new players are allowed or not",
+	description = "Toggle/Check whether new players are allowed or not",
 	params = "[yes/no/show]",
 	privs = {ban = true},
 	func = function(name, param)
