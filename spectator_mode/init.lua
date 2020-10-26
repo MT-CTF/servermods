@@ -115,6 +115,8 @@ end
 
 local function hide_player(player)
 	local prop = {
+		pointable = false,
+		is_visible = false,
 		visual_size  = { x = 0, y = 0 },
 		selectionbox = { 0,0,0, 0,0,0 },
 		makes_footstep_sound = false
