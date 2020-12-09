@@ -3,18 +3,18 @@ allow_defined_top = true
 max_line_length = 999
 
 globals = {
-    "ctf", "minetest",
-    "irc", "ctf_playertag",
-    "gauges",
+	"ctf", "minetest",
+	"irc", "ctf_playertag",
+	"gauges",
 }
 
 read_globals = {
-    string = {fields = {"split", "trim"}},
-    table = {fields = {"copy", "getn"}},
-    
-    "hud_score",
-    "ctf_stats", 
-    "filter",
+	string = {fields = {"split", "trim"}},
+	table = {fields = {"copy", "getn"}},
+
+	"ctf_stats",
+	"filter",
+	"hud_score",
 }
 
 files["server_chat/staff_channel.lua"].read_globals = { "table" }
