@@ -63,5 +63,55 @@ if filter then
 	end)
 end
 
-local modpath = minetest.get_modpath(minetest.get_current_modname()) .. "/"
-dofile(modpath .. "staff_channel.lua")
+--
+--
+--- Staff Channel
+--- Moved here because http api can't be requested unless in the main file
+--
+--
+
+local staff = {}
+local http = minetest.request_http_api()
+
+minetest.register_chatcommand("st", {
+	params = "<msg>",
+	description = "Send a message on the staff channel",
+	privs = { kick = true},
+	func = function(name, param)
+		local msg = "<" .. name .. "> " .. param
+		for _, toname in pairs(staff) do
+			minetest.chat_send_player(toname, minetest.colorize("#ff9900", msg))
+
+			minetest.log("action", "CHAT [STAFFCHANNEL]: <" .. name .. "> " .. param)
+		end
+
+		-- Send to discord
+		if http and minetest.settings:get("server_chat_webhook") then
+			http.fetch({
+				method = "POST",
+				url = minetest.settings:get("server_chat_webhook"),
+				extra_headers = {"Content-Type: application/json"},
+				timeout = 5,
+				data = minetest.write_json({
+					username = "Ingame Staff Channel",
+					avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
+					content = msg,
+				}),
+			}, function() end)
+		end
+	end
+})
+
+minetest.register_on_joinplayer(function(player)
+	if minetest.check_player_privs(player, { kick = true}) then
+		table.insert(staff, player:get_player_name())
+	end
+end)
+
+minetest.register_on_leaveplayer(function(player)
+	local name = player:get_player_name()
+	local idx = table.indexof(staff, name)
+	if idx ~= -1 then
+		table.remove(staff, idx)
+	end
+end)
