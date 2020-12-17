@@ -1,1 +1,2 @@
 server_chat_webhook (Webhook to send staff messages to) string ""
+server_chat_relay_from_discord (Accept !st messages sent from ctf-discord-bot) bool false
