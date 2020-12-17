@@ -15,6 +15,7 @@ read_globals = {
 	"ctf_stats",
 	"filter",
 	"hud_score",
+	"dump",
 }
 
 files["spectator_mode/init.lua"].globals = { "ctf_map" }
