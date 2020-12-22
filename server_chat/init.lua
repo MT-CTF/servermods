@@ -159,7 +159,7 @@ minetest.register_chatcommand("players", {
               msg = msg ..player:get_player_name() ..", "
             end
             minetest.chat_send_all(minetest.colorize("#0D64F3", msg))
-		end
+	end
 })
 
 if http then
@@ -186,17 +186,17 @@ if http then
             end
 					
 			if minetest.settings:get("server_chat_webhook") then
-						http.fetch({
-								method = "POST",
-								url = minetest.settings:get("server_chat_webhook"),
-								extra_headers = {"Content-Type: application/json"},
-								timeout = 5,
-								post_data = minetest.write_json({
-										username = "TeSt",
-										avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
-										content = msg,
-								}),
-						}, function() end)
+					http.fetch({
+						method = "POST",
+						url = minetest.settings:get("server_chat_webhook"),
+						extra_headers = {"Content-Type: application/json"},
+						timeout = 5,
+						post_data = minetest.write_json({
+							username = "TeSt",
+							avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
+							content = msg,
+						}),
+					}, function() end)
 			end				
 		end)
 	end)
