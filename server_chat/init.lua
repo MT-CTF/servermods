@@ -148,3 +148,56 @@ minetest.register_on_leaveplayer(function(player)
 		table.remove(staff, idx)
 	end
 end)
+
+-- !players command for discord
+
+minetest.register_chatcommand("players", {
+        description = "sends names of players in the game currently to discord",
+        func = function()
+            local msg = "Connected Players: "
+            for _,player in ipairs(minetest.get_connected_players()) do
+              msg = msg ..player:get_player_name() ..", "
+            end
+            minetest.chat_send_all(minetest.colorize("#0D64F3", msg))
+		end
+})
+
+if http then
+	local time = 0
+	minetest.register_globalstep(function(dtime)
+		time = time + dtime
+
+		if time <= 5 then
+			return
+		else
+			time = 0
+		end
+
+		http.fetch({
+			url = "127.0.0.1:31338",
+			timeout = 5,
+			method = "GET",
+		}, function(res)
+			if res.data == "" then return end
+					
+			local msg = "Connected Players: "
+            for _,player in ipairs(minetest.get_connected_players()) do
+              msg = msg ..player:get_player_name() ..", "
+            end
+					
+			if minetest.settings:get("server_chat_webhook") then
+						http.fetch({
+								method = "POST",
+								url = minetest.settings:get("server_chat_webhook"),
+								extra_headers = {"Content-Type: application/json"},
+								timeout = 5,
+								post_data = minetest.write_json({
+										username = "TeSt",
+										avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
+										content = msg,
+								}),
+						}, function() end)
+			end				
+		end)
+	end)
+end
