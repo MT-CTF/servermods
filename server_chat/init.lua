@@ -191,7 +191,7 @@ if http then
 						url = minetest.settings:get("server_chat_webhook"),
 						extra_headers = {"Content-Type: application/json"},
 						timeout = 5,
-						post_data = minetest.write_json({
+						data = minetest.write_json({
 							username = "Players",
 							avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
 							content = msg,
