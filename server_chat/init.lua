@@ -174,16 +174,16 @@ if http then
 		end
 
 		http.fetch({
-			url = "127.0.0.1:31338",
+			url = "localhost:31338",
 			timeout = 5,
 			method = "GET",
 		}, function(res)
 			if res.data == "" then return end
 					
 			local msg = "Connected Players: "
-            for _,player in ipairs(minetest.get_connected_players()) do
-              msg = msg ..player:get_player_name() ..", "
-            end
+            		for _,player in ipairs(minetest.get_connected_players()) do
+             			msg = msg ..player:get_player_name() ..", "
+            		end
 					
 			if minetest.settings:get("server_chat_webhook") then
 					http.fetch({
@@ -192,7 +192,7 @@ if http then
 						extra_headers = {"Content-Type: application/json"},
 						timeout = 5,
 						post_data = minetest.write_json({
-							username = "TeSt",
+							username = "Players",
 							avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
 							content = msg,
 						}),
