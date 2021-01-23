@@ -106,10 +106,10 @@ if http and minetest.settings:get("server_chat_relay_from_discord") then
 	end)
 end
 
-minetest.register_chatcommand("st", {
+minetest.register_chatcommand("x", {
 	params = "<msg>",
 	description = "Send a message on the staff channel",
-	privs = { kick = true},
+	privs = { kick = true },
 	func = function(name, param)
 		local msg = "<" .. name .. "> " .. param
 		for _, toname in pairs(staff) do
