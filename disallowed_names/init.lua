@@ -13,17 +13,17 @@ end)
 -- Command to add a name to disallowed names
 minetest.register_chatcommand("bdname_add", {
     params = "<name>",
-    privs = {ban = true},
+    privs = { ban = true },
     description = "Adds a name to the disallowed names list.",
     func = function(name,param)
-        if param ~= "" then
-            table.insert(disallowed_names, tostring(param))
-            storage:set_string("disallowed_names", minetest.serialize(disallowed_names))
+		if param ~= "" then
+			table.insert(disallowed_names, tostring(param))
+			storage:set_string("disallowed_names", minetest.serialize(disallowed_names))
 
 			return true, "Added " .. param .. " to the list of banned names"
-        else
-            return false, "You need to provide a name to add")
-        end
+		else
+			return false, "You need to provide a name to add")
+		end
     end
 })
 
@@ -31,7 +31,7 @@ minetest.register_chatcommand("bdname_add", {
 minetest.register_chatcommand("bdname_remove",{
     description = "removes a name from disallowed names",
     params = "<name>",
-    privs = {ban=true},
+    privs = { ban = true },
     func = function(name, param)
         if param ~= "" then
             for k in pairs(disallowed_names) do
@@ -54,9 +54,9 @@ minetest.register_chatcommand("bdname_list", {
     privs = {ban = true},
     func = function(name)
 		local output = ""
-       for _, bn in pairs(disallowed_names) do
-            output = output .. bn .. "\n"
-       end
+		for _, bn in pairs(disallowed_names) do
+			output = output .. bn .. "\n"
+		end
 		
 		return true, output:sub(1, -2)
     end
