@@ -1,11 +1,11 @@
 local storage = minetest.get_mod_storage()
-minetest.deserialize(storage:get_string("disallowed_names"))
-disallowed_names=minetest.deserialize(storage:get_string("disallowed_names")) or {"sex","fuck","damn","drug","suicid"}
+
+disallowed_names = minetest.deserialize(storage:get_string("disallowed_names")) or {"sex","fuc","drug","suicid"}
 
 minetest.register_on_prejoinplayer(function(name)
-    for k,v in pairs(disallowed_names) do
-        if string.find(string.lower(name),string.lower(v)) then
-            return "Your cannot use that username in this server. Please login with another username."
+    for _, dn in pairs(disallowed_names) do
+        if string.find(name:lower(), dn:lower()) then
+            return "You cannot use that name on this server. Please try a different name."
         end
     end
 end)
@@ -17,12 +17,12 @@ minetest.register_chatcommand("bdname_add", {
     description = "Adds a name to the disallowed names list.",
     func = function(name,param)
         if param ~= "" then
-            table.insert(disallowed_names,tostring(param))
-            minetest.chat_send_player(name, "Added " .. param .. " to the list of banned words")
-            local serial_table = minetest.serialize(disallowed_names)
-            storage:set_string("disallowed_names", serial_table)
+            table.insert(disallowed_names, tostring(param))
+            storage:set_string("disallowed_names", minetest.serialize(disallowed_names))
+
+			return true, "Added " .. param .. " to the list of banned names"
         else
-            minetest.chat_send_player(name, "You need to add a name\n/bdname_add <name>")
+            return false, "You need to provide a name to add")
         end
     end
 })
@@ -33,13 +33,17 @@ minetest.register_chatcommand("bdname_remove",{
     params = "<name>",
     privs = {ban=true},
     func = function(name, param)
-        if param ~="" then
+        if param ~= "" then
             for k in pairs(disallowed_names) do
                 if param == disallowed_names[k] then
-                    table.remove(disallowed_names,k)
+                    table.remove(disallowed_names, k)
                 end
             end
             storage:set_string("disallowed_names", minetest.serialize(disallowed_names))
+			
+			return true, "Removed" .. param .. "from the list of banned names"
+        else
+			return false, "You need to provide a name to remove"
         end
     end
 })
@@ -49,8 +53,11 @@ minetest.register_chatcommand("bdname_list", {
     description = "Lists all the disallowed names.",
     privs = {ban = true},
     func = function(name)
-       for k in pairs(disallowed_names) do
-            minetest.chat_send_player(name, disallowed_names[k])
+		local output = ""
+       for _, bn in pairs(disallowed_names) do
+            output = output .. bn .. "\n"
        end
+		
+		return true, output:sub(1, -2)
     end
 })
