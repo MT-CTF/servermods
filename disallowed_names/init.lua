@@ -22,7 +22,7 @@ minetest.register_chatcommand("bdname_add", {
 
 			return true, "Added " .. param .. " to the list of banned names"
 		else
-			return false, "You need to provide a name to add")
+			return false, "You need to provide a name to add"
 		end
     end
 })
