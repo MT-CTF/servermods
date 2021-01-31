@@ -40,7 +40,6 @@ minetest.register_chatcommand("bdname_remove",{
                 end
             end
             storage:set_string("disallowed_names", minetest.serialize(disallowed_names))
-			
 			return true, "Removed" .. param .. "from the list of banned names"
         else
 			return false, "You need to provide a name to remove"
@@ -57,7 +56,7 @@ minetest.register_chatcommand("bdname_list", {
 		for _, bn in pairs(disallowed_names) do
 			output = output .. bn .. "\n"
 		end
-		
+
 		return true, output:sub(1, -2)
     end
 })
