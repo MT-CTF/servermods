@@ -1,0 +1,21 @@
+[submodule "sban"]
+	path = sban
+	url = https://github.com/shivajiva101/sban
+[submodule "sauth"]
+	path = sauth
+	url = https://github.com/shivajiva101/sauth/
+[submodule "irc"]
+	path = irc
+	url = https://github.com/minetest-mods/irc
+[submodule "irc_commands"]
+	path = irc_commands
+	url = https://github.com/MT-CTF/irc_commands
+[submodule "filter"]
+	path = filter
+	url = https://github.com/minetest-mods/filter
+[submodule "hud_notify"]
+	path = hud_notify
+	url = https://github.com/ClobberXD/hud_notify
+[submodule "antispam"]
+	path = antispam
+	url = https://github.com/appgurueu/antispam
