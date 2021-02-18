@@ -1,3 +1,3 @@
 minetest.override_chatcommand("notify", {
-    privs = {kick = true}
+    privs = { kick = true, ban = false }
 })
