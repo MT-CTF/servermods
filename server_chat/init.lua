@@ -27,10 +27,10 @@ minetest.override_chatcommand("mail", {
 
 -- Override /ctf_(un)queue_restart to require ctf_server priv
 minetest.register_privilege("ctf_server")
-minetest.override_chatcommand("ctf_queue_restart", {
+minetest.override_chatcommand("restart", {
 	privs = { ctf_server = true },
 })
-minetest.override_chatcommand("ctf_unqueue_restart", {
+minetest.override_chatcommand("unqueue_restart", {
 	privs = { ctf_server = true },
 })
 
