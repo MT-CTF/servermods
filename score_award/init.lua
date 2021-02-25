@@ -10,11 +10,10 @@ minetest.register_chatcommand("give_score", {
 		end
 
 		if minetest.get_player_by_name(params[1]) then
-			local main, match = ctf_stats.player(params[1])
+			local main = ctf_stats.player(params[1])
 
-			if main and match then
+			if main then
 				main.score = main.score + tonumber(params[2])
-				match.score = match.score + tonumber(params[2])
 
 				hud_score.new(params[1], {
 					name = "score_award:score",
