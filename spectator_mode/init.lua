@@ -21,6 +21,10 @@ minetest.register_chatcommand("watch", {
 
 		param = param:trim()
 		local target = minetest.get_player_by_name(param)
+		if target == player then
+			return false, "You can't spectate yourself!"
+		end
+
 		if not target then
 			return false, "Player " .. param .. " isn't online!"
 		end
@@ -31,6 +35,10 @@ minetest.register_chatcommand("watch", {
 
 		if not spectators[name] then
 			spectators[name] = {}
+		end
+
+		if minetest.check_player_privs(target, {spectate = true}) then
+			return false, "Can't spectate another spectator!"
 		end
 
 		spectators[name].target = param
