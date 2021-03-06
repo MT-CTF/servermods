@@ -73,7 +73,7 @@ end
 local staff = {}
 local http = minetest.request_http_api()
 
--- Grabs messages from CTF bot's !st <message>
+-- Grabs messages from CTF bot's !x <message>
 if http and minetest.settings:get("server_chat_relay_from_discord") then
 	local time = 0
 	minetest.register_globalstep(function(dtime)
@@ -98,7 +98,7 @@ if http and minetest.settings:get("server_chat_relay_from_discord") then
 				minetest.log("action", "CHAT [STAFFCHANNEL]: Sending messages sent from Discord: "..dump(messages))
 				for _, toname in pairs(staff) do
 					for _, msg in pairs(messages) do
-						minetest.chat_send_player(toname, minetest.colorize("#ff9900", msg))
+						minetest.chat_send_player(toname, minetest.colorize("#ffcc00", "[STAFF] " .. msg))
 					end
 				end
 			end
@@ -111,9 +111,9 @@ minetest.register_chatcommand("x", {
 	description = "Send a message on the staff channel",
 	privs = { kick = true },
 	func = function(name, param)
-		local msg = "<" .. name .. "> " .. param
+		local msg = "[STAFF] <" .. name .. "> " .. param
 		for _, toname in pairs(staff) do
-			minetest.chat_send_player(toname, minetest.colorize("#ff9900", msg))
+			minetest.chat_send_player(toname, minetest.colorize("#ffcc00", msg))
 
 			minetest.log("action", "CHAT [STAFFCHANNEL]: <" .. name .. "> " .. param)
 		end
