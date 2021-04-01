@@ -5,33 +5,31 @@ local gifted = {}
 minetest.after(60, function() can_gift = false end)
 
 minetest.register_on_joinplayer(function(player)
-	if can_gift then
-		local pname = player:get_player_name()
-		local main, match = ctf_stats.player(pname)
+	if not can_gift then return end
 
-		if main and match then
-			if gifted[pname] then GIFT_AMOUNT = -50 end
+	local pname = player:get_player_name()
+	minetest.after(2, function()
+		player = minetest.get_player_by_name(pname)
 
-			main.score  = main.score  + GIFT_AMOUNT
-			match.score = match.score + GIFT_AMOUNT
+		if player and not gifted[pname] then
+			local main, match = ctf_stats.player(pname)
 
-			ctf_stats.request_save()
+			if main and match then
+				main.score  = main.score  + GIFT_AMOUNT
+				match.score = match.score + GIFT_AMOUNT
 
-			hud_score.new(pname, {
-				name = "restart_gift:gift",
-				color = 0xc000cd,
-				value = GIFT_AMOUNT
-			})
+				ctf_stats.request_save()
 
-			if gifted[pname] then
-				GIFT_AMOUNT = -50
-				minetest.chat_send_player(pname, "No reward for the greedy.")
-				return
-			else
+				hud_score.new(pname, {
+					name = "restart_gift:gift",
+					color = 0xc000cd,
+					value = GIFT_AMOUNT
+				})
+
 				gifted[pname] = true
 			end
-		end
 
-		minetest.chat_send_player(pname, "Thanks for staying with us through that restart!")
-	end
+			minetest.chat_send_player(pname, "Thanks for staying with us through that restart!")
+		end
+	end)
 end)
