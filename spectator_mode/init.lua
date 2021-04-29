@@ -172,13 +172,11 @@ local function hide_player(player)
 end
 
 minetest.register_on_joinplayer(function(player)
-	minetest.after(3, function(name)
-		local player = minetest.get_player_by_name(name)
 		if not player then
 			return
 		end
 
-		if not minetest.check_player_privs(name, { spectate = true }) then
+		if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
 			return
 		end
 
@@ -186,7 +184,7 @@ minetest.register_on_joinplayer(function(player)
 		old_set(player, ctf_playertag.TYPE_BUILTIN, { a=0, r=255, g=255, b=255 })
 
 		hide_player(player)
-	end, player:get_player_name())
+		player:get_player_name()
 end)
 
 ctf_map.can_cross = function(player)
