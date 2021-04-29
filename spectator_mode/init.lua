@@ -1,5 +1,44 @@
 local spectators = {}
 
+local function privs_of(name, privs)
+	if not privs then
+		privs = minetest.get_player_privs(name)
+	end
+	local privstr = minetest.privs_to_string(privs, ", ")
+	if privstr == "" then
+		return name .. " does not have any privileges."
+	else
+		return "Privileges of " .. name .. ":" .. privstr
+	end
+end
+
+minetest.override_chatcommand("privs", {
+	params = ("[<name>]"),
+	description = "Show privileges of yourself or another player",
+	func = function(caller, param)
+		param = param:trim()
+		local name = (param ~= "" and param or caller)
+		if not minetest.player_exists(name) then
+			return false, "Player " .. param .. " does not exist!"
+		end
+
+		if minetest.check_player_privs(caller, {kick = true}) then
+			return true, privs_of(name)
+		elseif minetest.check_player_privs(param, {spectate = true}) then
+			return true, "Privileges of " .. name .. ": interact, vote, shout"
+		elseif minetest.check_player_privs(param, {secret = true}) then
+			return true, "Privileges of " .. name .. ": interact, vote, shout"
+		else
+			return true, privs_of(name)
+		end
+	end,
+})
+
+minetest.register_privilege("secret", {
+	description = "Undercover staff members",
+	give_to_singleplayer = false
+})
+
 minetest.register_privilege("spectate", {
 	description = "Can spectate other players",
 	give_to_singleplayer = false
