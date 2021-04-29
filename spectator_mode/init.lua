@@ -88,12 +88,12 @@ minetest.register_chatcommand("watch", {
 				position = {x = 0.5, y = 0.5},
 				offset = {x = 0, y = 100},
 				alignment = {x = 0, y = 0},
-				number = 0x4444CC,
+				number = 0xABCDEF,
 				text = hud_text
 			})
 		end
 		player:set_attach(target, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-		return true, minetest.colorize("#4444CC", hud_text)
+		return true, minetest.colorize("#ABCDEF", hud_text)
 	end
 })
 
@@ -110,7 +110,7 @@ minetest.register_chatcommand("unwatch", {
 		if player:get_attach() then
 			player:hud_remove(spectators[name].hud)
 			player:set_detach()
-			return true, minetest.colorize("#4444CC", "Stopped spectating " ..
+			return true, minetest.colorize("#ABCDEF", "Stopped spectating " ..
 					spectators[name].target .. "!")
 		end
 		spectators[name] = nil
@@ -128,7 +128,7 @@ minetest.register_on_leaveplayer(function(player)
 			return
 		-- Target left
 		elseif name == spec.target then
-			minetest.chat_send_player(sname, minetest.colorize("#4444CC",
+			minetest.chat_send_player(sname, minetest.colorize("#ABCDEF",
 					"Target left. Stopped spectating " .. spec.target .. "!"))
 			local spectator = minetest.get_player_by_name(sname)
 			if spectator and spectators[sname].hud then
@@ -168,7 +168,7 @@ local function hide_player(player)
 
 	player:set_properties(prop)
 	player:set_armor_groups({ immortal = 1 })
-	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}})
+	player:set_nametag_attributes({text = "", color = {a = 0, r = 255, g = 255, b = 255}})
 end
 
 minetest.register_on_joinplayer(function(player)
