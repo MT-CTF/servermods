@@ -1,5 +1,12 @@
 local spectators = {}
 
+--- Join messages aren't hidden in this mod because those are handled by the CTF game
+function minetest.send_leave_message(player_name, timed_out)
+	if not minetest.check_player_privs(player_name, {spectate = true}) then
+		minetest.chat_send_all("*** " .. player_name .. " left the game.")
+	end
+end
+
 local function privs_of(name, privs)
 	if not privs then
 		privs = minetest.get_player_privs(name)
