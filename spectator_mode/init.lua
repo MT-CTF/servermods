@@ -41,6 +41,8 @@ minetest.override_chatcommand("privs", {
 	end,
 })
 
+minetest.unregister_chatcommand("who")
+
 minetest.register_privilege("secret", {
 	description = "Undercover staff members",
 	give_to_singleplayer = false
