@@ -150,10 +150,6 @@ minetest.register_on_joinplayer(function(player)
 	end, player:get_player_name())
 end)
 
-ctf_map.can_cross = function(player)
-	return minetest.check_player_privs(player, {spectate = true})
-end
-
 -- /whereis chat-command
 minetest.register_chatcommand("whereis", {
 	params = "<name>",

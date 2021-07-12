@@ -3,7 +3,7 @@ allow_defined_top = true
 max_line_length = 999
 
 globals = {
-	"ctf", "minetest",
+	"minetest",
 	"irc", "ctf_playertag",
 	"gauges",
 }
@@ -18,5 +18,4 @@ read_globals = {
 	"dump",
 }
 
-files["spectator_mode/init.lua"].globals = { "ctf_map" }
 files["spectator_mode/init.lua"].ignore = { "player" }
