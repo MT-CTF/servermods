@@ -5,11 +5,7 @@ minetest.register_privilege("password_admin", {
 })
 
 local function player_cant_change_target_pass(player, target)
-	if not minetest.check_player_privs(player, {password_admin = true}) then
-		if minetest.check_player_privs(target, {kick = true}) then
-			return true
-		end
-	end
+	return not minetest.check_player_privs(player, {password_admin = true}) and minetest.check_player_privs(target, {kick = true})
 end
 
 local old_setpassword_func = minetest.registered_chatcommands.setpassword.func
