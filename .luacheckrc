@@ -3,7 +3,7 @@ allow_defined_top = true
 max_line_length = 999
 
 globals = {
-	"ctf", "minetest",
+	"ctf_report", "minetest",
 	"irc", "ctf_playertag",
 	"gauges",
 }

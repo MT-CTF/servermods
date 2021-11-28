@@ -1,6 +1,7 @@
 -- Restrict private messaging to players with a score of 500+
 local function canPM(name)
-	return minetest.check_player_privs(name, {kick=true}) or ctf_stats.player(name).score > 500
+	return true
+-- 	return minetest.check_player_privs(name, {kick=true}) or ctf_stats.player(name).score > 500
 end
 
 local old = minetest.registered_chatcommands["msg"].func
@@ -25,19 +26,10 @@ minetest.override_chatcommand("mail", {
 	end
 })
 
--- Override /ctf_(un)queue_restart to require ctf_server priv
-minetest.register_privilege("ctf_server")
-minetest.override_chatcommand("restart", {
-	privs = { ctf_server = true },
-})
-minetest.override_chatcommand("unqueue_restart", {
-	privs = { ctf_server = true },
-})
-
 minetest.override_chatcommand("admin", {
 	func = function()
 		-- lol
-		return true, "CTF was created by rubenwardy, and this is his server. Please use /report for any issues."
+		return true, "Admins are Lone_Wolf and savilli. Please use /report for any issues."
 	end
 })
 
@@ -73,37 +65,54 @@ end
 local staff = {}
 local http = minetest.request_http_api()
 
--- Grabs messages from CTF bot's !x <message>
-if http and minetest.settings:get("server_chat_relay_from_discord") then
-	local time = 0
-	minetest.register_globalstep(function(dtime)
-		time = time + dtime
+local function grab_staff_messages()
+	http.fetch({
+		url = "localhost:31337",
+		timeout = 5,
+		method = "GET",
+	}, function(res)
+		if res.data == "" then return end
 
-		if time <= 5 then
-			return
-		else
-			time = 0
-		end
+		local messages = minetest.parse_json(res.data)
 
-		http.fetch({
-			url = "localhost:31337",
-			timeout = 5,
-			method = "GET",
-		}, function(res)
-			if res.data == "" then return end
-
-			local messages = minetest.parse_json(res.data)
-
-			if messages and type(messages) == "table" and #messages > 0 then
-				minetest.log("action", "CHAT [STAFFCHANNEL]: Sending messages sent from Discord: "..dump(messages))
-				for _, toname in pairs(staff) do
-					for _, msg in pairs(messages) do
-						minetest.chat_send_player(toname, minetest.colorize("#ffcc00", "[STAFF] " .. msg))
-					end
+		if messages and type(messages) == "table" and #messages > 0 then
+			minetest.log("action", "[server_chat]: Sending messages sent from Discord: " .. dump(messages))
+			for toname in pairs(staff) do
+				for _, msg in pairs(messages) do
+					minetest.chat_send_player(toname, minetest.colorize("#ffcc00", "[STAFF] " .. msg))
 				end
 			end
-		end)
+		end
 	end)
+
+	minetest.after(5, grab_staff_messages)
+end
+
+-- Grabs messages from CTF bot's !x <message>
+if http and minetest.settings:get("server_chat_relay_from_discord") then
+	minetest.after(5, grab_staff_messages)
+end
+
+local function send_staff_message(msg, prefix, discord_prefix, discord_webhook)
+	minetest.log("action", string.format("[server_chat] " .. prefix .. msg))
+	for toname in pairs(ctf_report.staff) do
+		minetest.chat_send_player(toname, minetest.colorize("#ffcc00", prefix .. msg))
+	end
+
+	-- Send to discord
+	if http and minetest.settings:get(discord_webhook) then
+		http.fetch({
+			method = "POST",
+			url = minetest.settings:get(discord_webhook),
+			extra_headers = {"Content-Type: application/json"},
+			timeout = 5,
+			data = minetest.write_json({
+				username = discord_prefix,
+				avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
+				content = msg,
+			}),
+		}, function() end)
+	end
 end
 
 minetest.register_chatcommand("x", {
@@ -111,40 +120,10 @@ minetest.register_chatcommand("x", {
 	description = "Send a message on the staff channel",
 	privs = { kick = true },
 	func = function(name, param)
-		local msg = "[STAFF] <" .. name .. "> " .. param
-		for _, toname in pairs(staff) do
-			minetest.chat_send_player(toname, minetest.colorize("#ffcc00", msg))
-
-			minetest.log("action", "CHAT [STAFFCHANNEL]: <" .. name .. "> " .. param)
-		end
-
-		-- Send to discord
-		if http and minetest.settings:get("server_chat_webhook") then
-			http.fetch({
-				method = "POST",
-				url = minetest.settings:get("server_chat_webhook"),
-				extra_headers = {"Content-Type: application/json"},
-				timeout = 5,
-				data = minetest.write_json({
-					username = "Ingame Staff Channel",
-					avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
-					content = msg,
-				}),
-			}, function() end)
-		end
+		send_staff_message(string.format("<%s> %s", name, param), "[STAFF]: ", "Ingame Staff Channel", "server_chat_webhook")
 	end
 })
 
-minetest.register_on_joinplayer(function(player)
-	if minetest.check_player_privs(player, { kick = true}) then
-		table.insert(staff, player:get_player_name())
-	end
-end)
-
-minetest.register_on_leaveplayer(function(player)
-	local name = player:get_player_name()
-	local idx = table.indexof(staff, name)
-	if idx ~= -1 then
-		table.remove(staff, idx)
-	end
-end)
+ctf_report.send_report = function(msg)
+	send_staff_message(msg, "[REPORT]: ", "Ingame Report", "reports_webhook")
+end
