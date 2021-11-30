@@ -135,11 +135,11 @@ minetest.register_on_joinplayer(function(player)
 end)
 
 local old_can_show = ctf_hpbar.can_show
-function ctf_hpbar.can_show(player)
+function ctf_hpbar.can_show(player, ...)
 	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
 		return false
 	end
-	return old_can_show(player)
+	return old_can_show(player, ...)
 end
 
 local old_join_func = minetest.send_join_message
