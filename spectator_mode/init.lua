@@ -151,14 +151,12 @@ local old_leave_func = minetest.send_leave_message
 function minetest.send_join_message(player_name, ...)
 	if not minetest.check_player_privs(player_name, { spectate = true }) then
 		old_join_func(player_name, ...)
-		minetest.log(dump(minetest.check_player_privs(player_name, {spectate=true})))
 	end
 end
 
 function minetest.send_leave_message(player_name, ...)
 	if not minetest.check_player_privs(player_name, { spectate = true }) then
 		old_leave_func(player_name, ...)
-		minetest.log(dump(minetest.check_player_privs(player_name, {spectate=true})))
 	end
 end
 
