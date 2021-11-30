@@ -109,15 +109,6 @@ function ctf_playertag.set(player, type, color)
 	end
 end
 
-local old_add_gauge = gauges.add_HP_gauge
-function gauges.add_HP_gauge(name)
-	local privs = minetest.get_player_privs(name)
-	if not privs.spectate then
-		return old_add_gauge(name)
-	end
-end
-
-
 local function hide_player(player)
 	local prop = {
 		pointable = false,
@@ -129,26 +120,59 @@ local function hide_player(player)
 
 	player:set_properties(prop)
 	player:set_armor_groups({ immortal = 1 })
-	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}})
+	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}, text = ""})
 end
 
 minetest.register_on_joinplayer(function(player)
-	minetest.after(3, function(name)
-		local player = minetest.get_player_by_name(name)
-		if not player then
-			return
-		end
+	if not player then
+		return
+	end
 
-		if not minetest.check_player_privs(name, { spectate = true }) then
-			return
-		end
+	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
+		return
+	end
 
-		player:set_armor_groups({immortal = 1})
-		old_set(player, ctf_playertag.TYPE_BUILTIN, { a=0, r=255, g=255, b=255 })
+	player:set_armor_groups({immortal = 1})
+	old_set(player, ctf_playertag.TYPE_BUILTIN, { a=0, r=255, g=255, b=255 })
 
-		hide_player(player)
-	end, player:get_player_name())
+	hide_player(player)
 end)
+
+function ctf_hpbar.can_show(player)
+	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
+    		return true
+	end
+end
+
+local old_join_func = minetest.send_join_message
+local old_leave_func = minetest.send_leave_message
+
+function minetest.send_join_message(player_name, ...)
+	if not minetest.check_player_privs(player_name, { spectate = true }) then
+		old_join_func(player_name, ...)
+		minetest.log(dump(minetest.check_player_privs(player_name, {spectate=true})))
+	end
+end
+
+function minetest.send_leave_message(player_name, ...)
+	if not minetest.check_player_privs(player_name, { spectate = true }) then
+		old_leave_func(player_name, ...)
+		minetest.log(dump(minetest.check_player_privs(player_name, {spectate=true})))
+	end
+end
+
+function ctf_teams.allocate_player(player, on_join)
+	if not minetest.check_player_privs(player:get_player_name(), {spectate=true}) then
+		player = PlayerName(player)
+		local team = ctf_teams.team_allocator(player)
+
+		if on_join then
+			ctf_teams.player_team[player] = nil
+		end
+
+		ctf_teams.set(player, team)
+	end
+end
 
 -- /whereis chat-command
 minetest.register_chatcommand("whereis", {
