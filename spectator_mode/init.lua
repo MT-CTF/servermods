@@ -136,7 +136,7 @@ end)
 
 local old_can_show = ctf_hpbar.can_show
 function ctf_hpbar.can_show(player, ...)
-	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
+	if minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
 		return false
 	end
 	return old_can_show(player, ...)
