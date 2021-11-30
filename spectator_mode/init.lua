@@ -140,9 +140,10 @@ end)
 
 function ctf_hpbar.can_show(player)
 	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
-    		return true
+		return true
 	end
 end
+
 
 local old_join_func = minetest.send_join_message
 local old_leave_func = minetest.send_leave_message
