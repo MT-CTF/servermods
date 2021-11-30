@@ -124,10 +124,6 @@ local function hide_player(player)
 end
 
 minetest.register_on_joinplayer(function(player)
-	if not player then
-		return
-	end
-
 	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
 		return
 	end
@@ -138,12 +134,13 @@ minetest.register_on_joinplayer(function(player)
 	hide_player(player)
 end)
 
+local old_can_show = ctf_hpbar.can_show
 function ctf_hpbar.can_show(player)
 	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
-		return true
+		return false
 	end
+	return old_can_show(player)
 end
-
 
 local old_join_func = minetest.send_join_message
 local old_leave_func = minetest.send_leave_message
@@ -160,16 +157,10 @@ function minetest.send_leave_message(player_name, ...)
 	end
 end
 
-function ctf_teams.allocate_player(player, on_join)
+local old_allocate_player = ctf_teams.allocate_player
+function ctf_teams.allocate_player(player, on_join, ...)
 	if not minetest.check_player_privs(player:get_player_name(), {spectate=true}) then
-		player = PlayerName(player)
-		local team = ctf_teams.team_allocator(player)
-
-		if on_join then
-			ctf_teams.player_team[player] = nil
-		end
-
-		ctf_teams.set(player, team)
+		old_allocate_player(player, on_join, ...)
 	end
 end
 
