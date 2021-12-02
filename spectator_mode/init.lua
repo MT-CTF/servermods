@@ -101,14 +101,6 @@ minetest.register_on_leaveplayer(function(player)
 	end
 end)
 
-local old_set = ctf_playertag.set
-function ctf_playertag.set(player, type, color)
-	local privs = minetest.get_player_privs(player:get_player_name())
-	if not privs.spectate then
-		return old_set(player, type, color)
-	end
-end
-
 local function hide_player(player)
 	local prop = {
 		pointable = false,
@@ -127,9 +119,6 @@ minetest.register_on_joinplayer(function(player)
 	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
 		return
 	end
-
-	player:set_armor_groups({immortal = 1})
-	old_set(player, ctf_playertag.TYPE_BUILTIN, { a=0, r=255, g=255, b=255 })
 
 	hide_player(player)
 end)
