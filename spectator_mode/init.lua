@@ -125,9 +125,10 @@ end)
 
 local old_can_show = ctf_hpbar.can_show
 function ctf_hpbar.can_show(player, ...)
-	if minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
+	if minetest.check_player_privs(PlayerName(player), { spectate = true }) then
 		return false
 	end
+
 	return old_can_show(player, ...)
 end
 
@@ -136,20 +137,20 @@ local old_leave_func = minetest.send_leave_message
 
 function minetest.send_join_message(player_name, ...)
 	if not minetest.check_player_privs(player_name, { spectate = true }) then
-		old_join_func(player_name, ...)
+		return old_join_func(player_name, ...)
 	end
 end
 
 function minetest.send_leave_message(player_name, ...)
 	if not minetest.check_player_privs(player_name, { spectate = true }) then
-		old_leave_func(player_name, ...)
+		return old_leave_func(player_name, ...)
 	end
 end
 
 local old_allocate_player = ctf_teams.allocate_player
 function ctf_teams.allocate_player(player, on_join, ...)
-	if not minetest.check_player_privs(player:get_player_name(), {spectate=true}) then
-		old_allocate_player(player, on_join, ...)
+	if not minetest.check_player_privs(PlayerName(player), {spectate=true}) then
+		return old_allocate_player(player, on_join, ...)
 	end
 end
 
