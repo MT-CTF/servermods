@@ -45,8 +45,6 @@ minetest.register_on_joinplayer(function(player)
 end)
 
 local function get_clock(seconds)
-	--local seconds = tonumber(seconds)
-
 	if seconds <= 0 then
 		return "00:00:00"
 	else
