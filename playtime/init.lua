@@ -57,7 +57,7 @@ end
 
 minetest.register_chatcommand("playtime", {
 	params = "",
-	description = S("Get how much long you played"),
+	description = S("Get how long you played"),
 	func = function(name)
 		if minetest.get_player_by_name(name) then
 			return true,
