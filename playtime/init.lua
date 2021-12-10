@@ -1,6 +1,6 @@
 playtime = {}
 
-local os, math, string = os, math, string
+local os, math = os, math
 
 local current = {}
 
@@ -44,15 +44,12 @@ minetest.register_on_joinplayer(function(player)
 	current[player:get_player_name()] = os.time()
 end)
 
-local function get_clock(seconds)
-	if seconds <= 0 then
-		return "00:00:00"
-	else
-		local hours = string.format("%02.f", tostring(math.floor(seconds/3600)))
-		local mins = string.format("%02.f", tostring(math.floor(seconds/60 - hours*60)))
-		local secs = string.format("%02.f", tostring(math.floor(seconds - hours*3600 - mins*60)))
-		return hours..":"..mins..":"..secs
-	end
+local function divmod(a, b) return math.floor(a / b), a % b end
+
+local function format_duration(seconds)
+	local display_hours, seconds_left = divmod(seconds, 3600)
+	local display_minutes, display_seconds = divmod(seconds_left, 60)
+	return ("%02d:%02d:%02d"):format(display_hours, display_minutes, display_seconds)
 end
 
 minetest.register_chatcommand("playtime", {
@@ -61,8 +58,8 @@ minetest.register_chatcommand("playtime", {
 	func = function(name)
 		if minetest.get_player_by_name(name) then
 			return true,
-				C("#63d437", "Total: ")..C("#ffea00", get_clock(playtime.get_total_playtime(name))).."\n"..
-				C("#63d437", "Current: ")..C("#ffea00", get_clock(playtime.get_session_playtime(name)))
+				C("#63d437", "Total: ")..C("#ffea00", format_duration(playtime.get_total_playtime(name))).."\n"..
+				C("#63d437", "Current: ")..C("#ffea00", format_duration(playtime.get_session_playtime(name)))
 		else
 			return false, S("You must be connected to run this command!")
 		end
