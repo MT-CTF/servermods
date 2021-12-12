@@ -5,10 +5,10 @@ max_line_length = 999
 globals = {
 	"minetest",
 
-	"ctf_report",
+	"ctf_report", "ctf_modebase", "ctf_chat", "ctf_teams",
 	"irc", "ctf_playertag",
 	"gauges", "ctf_hpbar",
-	"ctf_teams", "PlayerName",
+	"PlayerName",
 }
 
 read_globals = {
