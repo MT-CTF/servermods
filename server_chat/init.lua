@@ -1,3 +1,6 @@
+local http = minetest.request_http_api()
+local storage = minetest.get_mod_storage()
+
 minetest.override_chatcommand("admin", {
 	func = function()
 		-- lol
@@ -27,15 +30,7 @@ if filter then
 	end)
 end
 
---
---
---- Staff Channel
---- Moved here because http api can't be requested unless in the main file
---
---
-
-local staff = {}
-local http = minetest.request_http_api()
+-- Staff Channel
 
 local function grab_staff_messages()
 	http.fetch({
@@ -49,10 +44,15 @@ local function grab_staff_messages()
 
 		if messages and type(messages) == "table" and #messages > 0 then
 			minetest.log("action", "[server_chat]: Sending messages sent from Discord: " .. dump(messages))
-			for toname in pairs(staff) do
-				for _, msg in pairs(messages) do
-					minetest.chat_send_player(toname, minetest.colorize("#ffcc00", "[STAFF] " .. msg))
-				end
+
+			local msg = ""
+			for _, m in ipairs(messages) do
+				msg = msg .. "[STAFF]: " .. m .. "\n"
+			end
+			msg = minetest.colorize(msg:sub(1, -2))
+
+			for toname in pairs(ctf_report.staff) do
+				minetest.chat_send_player(toname, "#ffcc00", msg)
 			end
 		end
 	end)
@@ -96,6 +96,62 @@ minetest.register_chatcommand("x", {
 	end
 })
 
+-- IRC mods
+
+local function get_irc_mods()
+	return storage:get_string("irc_mods"):split(",")
+end
+
+local function add_irc_mod(name)
+	local mods = get_irc_mods()
+	if table.indexof(mods, name) > 0 then
+		return false
+	end
+	mods[#mods + 1] = name
+	storage:set_string("irc_mods", table.concat(mods, ","))
+	minetest.log("action", "[irc_mods]: " .. name .. " subscribed to IRC reports")
+	return true
+end
+
+local function remove_irc_mod(name)
+	local mods = get_irc_mods()
+	local idx = table.indexof(mods, name)
+	if idx > 0 then
+		table.remove(mods, idx)
+		storage:set_string("irc_mods", table.concat(mods, ","))
+		minetest.log("action", "[irc_mods]: " .. name .. " unsubscribed from IRC reports")
+		return true
+	end
+	return false
+end
+
+minetest.register_chatcommand("report_sub", {
+	privs = { kick = true },
+	func = function(name, param)
+		if param:lower():trim() == "remove" then
+			if remove_irc_mod(name) then
+				return true, "Successfully removed!"
+			else
+				return false, "Unable to remove, are you even subscribed?"
+			end
+		else
+			if add_irc_mod(name) then
+				return true, "Successfully added!"
+			else
+				return false, "Unable to add, are you already subscribed?"
+			end
+		end
+	end
+})
+
 ctf_report.send_report = function(msg)
+	if irc then
+		for _, toname in pairs(get_irc_mods()) do
+			if not minetest.get_player_by_name(toname) then
+				minetest.chat_send_player(toname, msg)
+			end
+		end
+	end
+
 	send_staff_message(msg, "[REPORT]: ", "Ingame Report", "reports_webhook")
 end
