@@ -6,8 +6,7 @@ globals = {
 	"minetest",
 
 	"ctf_report", "ctf_modebase", "ctf_chat", "ctf_teams",
-	"irc", "ctf_playertag",
-	"gauges", "ctf_hpbar",
+	"irc", "hpbar",
 	"PlayerName",
 }
 

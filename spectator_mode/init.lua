@@ -123,8 +123,8 @@ minetest.register_on_joinplayer(function(player)
 	hide_player(player)
 end)
 
-local old_can_show = ctf_hpbar.can_show
-function ctf_hpbar.can_show(player, ...)
+local old_can_show = hpbar.can_show
+function hpbar.can_show(player, ...)
 	if minetest.check_player_privs(PlayerName(player), { spectate = true }) then
 		return false
 	end
