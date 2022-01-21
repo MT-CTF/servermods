@@ -4,7 +4,7 @@ local storage = minetest.get_mod_storage()
 minetest.override_chatcommand("admin", {
 	func = function()
 		-- lol
-		return true, "Admins are Lone_Wolf and savilli. Please use /report for any issues."
+		return true, "CTF was created by rubenwardy. The current admin/developer is LandarVargan.\nPlease use /report for any issues."
 	end
 })
 
