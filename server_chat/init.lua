@@ -66,7 +66,7 @@ if http and minetest.settings:get("server_chat_relay_from_discord") then
 end
 
 local function send_staff_message(msg, prefix, discord_prefix, discord_webhook)
-	minetest.log("action", string.format("[server_chat] " .. prefix .. msg))
+	minetest.log("action", "[server_chat] " .. prefix .. msg)
 	for toname in pairs(ctf_report.staff) do
 		minetest.chat_send_player(toname, minetest.colorize("#ffcc00", prefix .. msg))
 	end
