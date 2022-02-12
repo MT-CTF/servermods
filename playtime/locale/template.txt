@@ -1,0 +1,4 @@
+# textdomain: playtime
+
+You must be connected to run this command!=
+See your total playtime on this server=
