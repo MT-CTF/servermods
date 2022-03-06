@@ -26,6 +26,8 @@ if irc then
 	end
 
 	ctf_modebase.announce = function(msg)
-		irc.say(msg)
+		for m in msg:gmatch("[^\n]+") do
+			irc.say(m)
+		end
 	end
 end
