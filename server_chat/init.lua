@@ -52,7 +52,7 @@ local function grab_staff_messages()
 			msg = minetest.colorize(msg:sub(1, -2))
 
 			for toname in pairs(ctf_report.staff) do
-				minetest.chat_send_player(toname, "#ffcc00", msg)
+				minetest.chat_send_player(toname, minetest.colorize("#ffcc00", msg))
 			end
 		end
 	end)
