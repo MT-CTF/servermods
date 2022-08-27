@@ -5,7 +5,7 @@ local no_new_players = modstorage:get_int("no_new_players") == 1
 minetest.register_on_prejoinplayer(function(name, ip)
 	if no_new_players and minetest.get_auth_handler().get_auth(name) == nil then
 		return "We aren't accepting new players right now. " ..
-				"Please try again another day or contact us on the forums https://forum.minetest.net/viewtopic.php?f=10&t=13157"
+				"Please try again another day, contact us on the forums https://forum.minetest.net/viewtopic.php?f=10&t=13157 or on our Discord server https://discord.gg/vcZTRPX"
 	end
 end)
 
