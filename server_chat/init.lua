@@ -35,7 +35,7 @@ end
 local function grab_staff_messages()
 	http.fetch({
 		url = "localhost:31337",
-		timeout = 5,
+		timeout = 10,
 		method = "GET",
 	}, function(res)
 		if res.data == "" then return end
@@ -46,10 +46,9 @@ local function grab_staff_messages()
 			minetest.log("action", "[server_chat]: Sending messages sent from Discord: " .. dump(messages))
 
 			local msg = ""
-			for _, m in ipairs(messages) do
+			for _, m in pairs(messages) do
 				msg = msg .. "[STAFF]: " .. m .. "\n"
 			end
-			msg = minetest.colorize(msg:sub(1, -2))
 
 			for toname in pairs(ctf_report.staff) do
 				minetest.chat_send_player(toname, minetest.colorize("#ffcc00", msg))
@@ -77,7 +76,7 @@ local function send_staff_message(msg, prefix, discord_prefix, discord_webhook)
 			method = "POST",
 			url = minetest.settings:get(discord_webhook),
 			extra_headers = {"Content-Type: application/json"},
-			timeout = 5,
+			timeout = 10,
 			data = minetest.write_json({
 				username = discord_prefix,
 				avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
