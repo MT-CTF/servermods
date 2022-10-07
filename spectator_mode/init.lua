@@ -5,6 +5,20 @@ minetest.register_privilege("spectate", {
 	give_to_singleplayer = false
 })
 
+local function hide_player(player)
+	local prop = {
+		pointable = false,
+		is_visible = false,
+		visual_size  = { x = 0, y = 0 },
+		selectionbox = { 0,0,0, 0,0,0 },
+		makes_footstep_sound = false
+	}
+
+	player:set_properties(prop)
+	player:set_armor_groups({ immortal = 1 })
+	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}, text = ""})
+end
+
 minetest.register_chatcommand("watch", {
 	params = "<name>",
 	description = "Spectate another player",
@@ -103,20 +117,6 @@ minetest.register_on_leaveplayer(function(player)
 		end
 	end
 end)
-
-local function hide_player(player)
-	local prop = {
-		pointable = false,
-		is_visible = false,
-		visual_size  = { x = 0, y = 0 },
-		selectionbox = { 0,0,0, 0,0,0 },
-		makes_footstep_sound = false
-	}
-
-	player:set_properties(prop)
-	player:set_armor_groups({ immortal = 1 })
-	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}, text = ""})
-end
 
 minetest.register_on_joinplayer(function(player)
 	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
