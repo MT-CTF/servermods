@@ -53,6 +53,9 @@ minetest.register_chatcommand("watch", {
 				text = hud_text
 			})
 		end
+
+		hide_player(player)
+
 		player:set_attach(target, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
 		return true, minetest.colorize("#4444CC", hud_text)
 	end
