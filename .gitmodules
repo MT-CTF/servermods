@@ -19,3 +19,9 @@
 [submodule "antispam"]
 	path = antispam
 	url = https://github.com/appgurueu/antispam
+[submodule "news_markdown"]
+	path = news_markdown
+	url = https://github.com/MT-CTF/news_markdown.git
+[submodule "markdown2formspec"]
+	path = markdown2formspec
+	url = https://github.com/ExeVirus/markdown2formspec.git
