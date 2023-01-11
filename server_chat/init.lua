@@ -64,10 +64,19 @@ if http and minetest.settings:get("server_chat_relay_from_discord") then
 	minetest.after(5, grab_staff_messages)
 end
 
-local function send_staff_message(msg, prefix, discord_prefix, discord_webhook)
+local function send_staff_message(msg, prefix, discord_prefix, discord_webhook, send_ingame)
 	minetest.log("action", "[server_chat] " .. prefix .. msg)
-	for toname in pairs(ctf_report.staff) do
-		minetest.chat_send_player(toname, minetest.colorize("#ffcc00", prefix .. msg))
+
+	if send_ingame ~= false then
+		for toname in pairs(ctf_report.staff) do
+			minetest.chat_send_player(toname, minetest.colorize("#ffcc00", prefix .. msg))
+
+			minetest.sound_play("ctf_report_bell", {
+				to_player = toname,
+				gain = 1.4,
+				pitch = 1.4,
+			}, true)
+		end
 	end
 
 	-- Send to discord
@@ -143,6 +152,7 @@ minetest.register_chatcommand("report_sub", {
 	end
 })
 
+local old_send_report = ctf_report.send_report
 ctf_report.send_report = function(msg)
 	if irc then
 		for _, toname in pairs(get_irc_mods()) do
@@ -152,5 +162,7 @@ ctf_report.send_report = function(msg)
 		end
 	end
 
-	send_staff_message(msg, "[REPORT]: ", "Ingame Report", "reports_webhook")
+	send_staff_message(msg, "[REPORT]: ", "Ingame Report", "reports_webhook", false)
+
+	old_send_report(msg)
 end
