@@ -1,15 +1,17 @@
 minetest.register_node("anti_blockspam:loading", {
 	description = "Visual-only node",
+	drawtype = "glasslike",
 	tiles = {{
 		name = "anti_blockspam_loading.png",
 		animation = {
 			type = "vertical_frames",
 			aspect_w = 16,
 			aspect_h = 16,
-			length = 0.4,
+			length = 1.0,
 		}}
 	},
-	use_texture_alpha = false,
+	use_texture_alpha = "clip",
+	paramtype = "light",
 	sunlight_propagates = true,
 	pointable = false,
 	diggable = false,
@@ -17,9 +19,26 @@ minetest.register_node("anti_blockspam:loading", {
 })
 
 minetest.register_on_mods_loaded(function()
-	for name in pairs(minetest.registered_nodes) do
-		minetest.override_item(name, {
-			node_placement_prediction = "anti_blockspam:loading"
-		})
+	for name, def in pairs(minetest.registered_nodes) do
+		if def.walkable then
+			minetest.override_item(name, {
+				node_placement_prediction = "anti_blockspam:loading"
+			})
+		end
+	end
+
+	local old_is_protected = minetest.is_protected
+	local gettime = minetest.get_us_time
+
+	local queue = {}
+	minetest.is_protected = function(pos, name, ...)
+		local time = gettime()
+
+		if queue[name] and time - queue[name] < 240000 then
+			return true
+		else
+			queue[name] = time
+			return old_is_protected(pos, name, ...)
+		end
 	end
 end)
