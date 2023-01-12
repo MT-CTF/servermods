@@ -1,6 +1,7 @@
 local gettime = minetest.get_us_time
 
 local queue = {}
+local slows = {}
 
 minetest.register_node("anti_blockspam:loading", {
 	description = "Visual-only node",
@@ -28,6 +29,8 @@ minetest.register_on_mods_loaded(function()
 			minetest.override_item(name, {
 				node_placement_prediction = "anti_blockspam:loading"
 			})
+
+			slows[name] = true
 		end
 	end
 
@@ -36,7 +39,7 @@ minetest.register_on_mods_loaded(function()
 	minetest.is_protected = function(pos, name, ...)
 		local time = gettime()
 
-		if queue[name] and time - queue[name] < 240000 then
+		if queue[name] and time - queue[name] < 250000 then
 			return true
 		else
 			return old_is_protected(pos, name, ...)
@@ -44,8 +47,9 @@ minetest.register_on_mods_loaded(function()
 	end
 end)
 
+local in_combat = ctf_combat_mode.in_combat
 minetest.register_on_placenode(function(pos, newnode, placer)
-	if placer and placer:is_player() then
+	if placer and placer:is_player() and slows[newnode.name] and (in_combat(placer) or pos.y > placer:get_pos().y) then
 		queue[placer:get_player_name()] = gettime()
 	end
 end)
