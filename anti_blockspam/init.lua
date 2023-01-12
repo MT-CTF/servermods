@@ -1,3 +1,7 @@
+local gettime = minetest.get_us_time
+
+local queue = {}
+
 minetest.register_node("anti_blockspam:loading", {
 	description = "Visual-only node",
 	drawtype = "glasslike",
@@ -20,7 +24,7 @@ minetest.register_node("anti_blockspam:loading", {
 
 minetest.register_on_mods_loaded(function()
 	for name, def in pairs(minetest.registered_nodes) do
-		if def.walkable then
+		if def.walkable and def.node_placement_prediction == nil then
 			minetest.override_item(name, {
 				node_placement_prediction = "anti_blockspam:loading"
 			})
@@ -28,17 +32,20 @@ minetest.register_on_mods_loaded(function()
 	end
 
 	local old_is_protected = minetest.is_protected
-	local gettime = minetest.get_us_time
 
-	local queue = {}
 	minetest.is_protected = function(pos, name, ...)
 		local time = gettime()
 
 		if queue[name] and time - queue[name] < 240000 then
 			return true
 		else
-			queue[name] = time
 			return old_is_protected(pos, name, ...)
 		end
+	end
+end)
+
+minetest.register_on_placenode(function(pos, newnode, placer)
+	if placer and placer:is_player() then
+		queue[placer:get_player_name()] = gettime()
 	end
 end)
