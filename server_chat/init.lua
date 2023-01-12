@@ -8,6 +8,20 @@ minetest.override_chatcommand("admin", {
 	end
 })
 
+minetest.register_chatcommand("players", {
+	description = "List the players currently online",
+	func = function(name, param)
+		local players = minetest.get_connected_players()
+		local out = #players .. " player(s) online: "
+
+		for _, p in pairs(players) do
+			out = out .. p:get_player_name() .. ", "
+		end
+
+		return true, out:sub(1, -3)
+	end
+})
+
 -- Disable IRC bot-command /whereis
 if irc then
 	irc.bot_commands["whereis"] = nil
