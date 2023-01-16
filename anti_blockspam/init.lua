@@ -39,7 +39,7 @@ minetest.register_on_mods_loaded(function()
 	minetest.is_protected = function(pos, name, ...)
 		local time = gettime()
 
-		if queue[name] and time - queue[name] < 250000 then
+		if queue[name] and time - queue[name] < 230000 then
 			return true
 		else
 			return old_is_protected(pos, name, ...)
@@ -49,7 +49,7 @@ end)
 
 local in_combat = ctf_combat_mode.in_combat
 minetest.register_on_placenode(function(pos, newnode, placer)
-	if placer and placer:is_player() and slows[newnode.name] and (in_combat(placer) or pos.y > placer:get_pos().y) then
+	if placer and placer:is_player() and slows[newnode.name] and in_combat(placer) and pos.y > placer:get_pos().y then
 		queue[placer:get_player_name()] = gettime()
 	end
 end)
