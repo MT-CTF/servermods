@@ -4,6 +4,10 @@ minetest.register_privilege("password_admin", {
 	give_to_admin = true,
 })
 
+minetest.override_chatcommand("kill", {
+	privs = {ban=true},
+})
+
 local function player_cant_change_target_pass(player, target)
 	return not minetest.check_player_privs(player, {password_admin = true}) and minetest.check_player_privs(target, {kick = true})
 end
