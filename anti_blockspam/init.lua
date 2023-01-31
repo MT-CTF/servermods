@@ -39,7 +39,7 @@ minetest.register_on_mods_loaded(function()
 	minetest.is_protected = function(pos, name, ...)
 		local time = gettime()
 
-		if queue[name] and time - queue[name] < 230000 then
+		if queue[name] and time - queue[name] < 160000 then
 			return true
 		else
 			return old_is_protected(pos, name, ...)
