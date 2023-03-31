@@ -18,6 +18,7 @@ read_globals = {
 	"filter",
 	"hud_score",
 	"dump",
+	"unpack",
 }
 
 files["spectator_mode/init.lua"].ignore = { "player" }

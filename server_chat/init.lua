@@ -106,6 +106,8 @@ local function send_staff_message(msg, prefix, discord_prefix, discord_webhook, 
 				content = msg,
 			}),
 		}, function() end)
+	else
+		minetest.log("warning", "[server_chat] Discord webhook isn't configured. http is "..(http and "enabled" or "not enabled")..". Webhook is "..dump(minetest.settings:get(discord_webhook)))
 	end
 end
 
@@ -179,4 +181,26 @@ ctf_report.send_report = function(msg)
 	send_staff_message(msg, "[REPORT]: ", "Ingame Report", "reports_webhook", false)
 
 	old_send_report(msg)
+end
+
+local commands = {"kick", "ban", "tempban", "revoke"}
+for _, cmd in pairs(commands) do
+	if minetest.registered_chatcommands[cmd] then
+		local oldcmdfunc = minetest.registered_chatcommands[cmd].func
+		minetest.override_chatcommand(cmd, {
+			func = function(name, params, ...)
+				local returns = {oldcmdfunc(name, params, ...)}
+
+				if returns then
+					if returns[1] == true then
+						send_staff_message(name.." ran command: `/"..cmd.." " .. params.."`", "[STAFF]: ", "Staff Command", "reports_webhook", true)
+					end
+
+					return unpack(returns)
+				end
+			end
+		})
+	else
+		minetest.log("[server_chat]: Command "..cmd.." doesn't exist")
+	end
 end
