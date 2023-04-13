@@ -5,6 +5,8 @@ max_line_length = 999
 globals = {
 	"minetest",
 
+	"news_markdown",
+
 	"ctf_report", "ctf_modebase", "ctf_chat", "ctf_teams", "ctf_combat_mode",
 	"irc", "hpbar",
 	"PlayerName",
