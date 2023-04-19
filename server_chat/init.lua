@@ -22,6 +22,111 @@ minetest.register_chatcommand("players", {
 	end
 })
 
+-- Shadowmute command
+
+local shadowmutes = {}
+
+minetest.register_chatcommand("shadowmute", {
+	description = "Mute a player without notifying them of it",
+	params = "<player name> [time]",
+	privs = {ban = true},
+	func = function(name, params)
+		if params and params ~= "" then
+			params = string.split(params, " ")
+			local player_ip = minetest.get_player_ip(params[1])
+
+			if params[2] then -- Shadowmute with timer
+				local time_amount, time_unit = params[2]:match("(%d+)(.)")
+
+				if not time_amount or not time_unit then
+					return false, "Invalid time format. Valid time units: S(econds), M(inutes), H(ours), D(ays). Example time: 12D"
+				end
+
+				local amount = tonumber(time_amount)
+				if time_unit:match("[sS]") then
+					time_unit = "sec"
+				elseif time_unit:match("[mM]") then
+					time_unit = "min"
+					amount = amount * 60
+				elseif time_unit:match("[hH]") then
+					time_unit = "hour"
+					amount = amount * 60 * 60
+				elseif time_unit:match("[dD]") then
+					time_unit = "day"
+					amount = amount * 60 * 60 * 24
+				else
+					return false, "Invalid time unit"
+				end
+
+				shadowmutes[player_ip or params[1]] = os.time() + amount
+
+				return true, "Shadowmuted "..(player_ip or params[1]).." for "..time_amount..time_unit
+			else -- Shadowmute without timer
+				shadowmutes[player_ip or params[1]] = true
+
+				return true, "Shadowmuted "..(player_ip or params[1]).." until next server restart"
+			end
+		end
+
+		return false, "You need to specify a player to shadowmute!"
+	end,
+})
+
+minetest.register_chatcommand("unshadowmute", {
+	description = "Remove a shadowmute from a player",
+	params = "<player ip>",
+	privs = {ban = true},
+	func = function(name, params)
+		if params and params ~= "" then
+			if shadowmutes[params] then
+				shadowmutes[params] = nil
+
+				return true, "Shadowmute removed"
+			else
+				return false, "The given IP is invalid or not shadowmuted"
+			end
+		end
+
+		return false, "You must supply an IP address"
+	end
+})
+
+minetest.register_on_chat_message(function(name, message)
+	if message:sub(1,1) == "/" then return end
+
+	local ip = minetest.get_player_ip(name)
+
+	if shadowmutes[ip] then
+		if shadowmutes[ip] ~= true and os.time() >= shadowmutes[ip] then
+			shadowmutes[ip] = nil
+			return
+		end
+
+		local pteam = ctf_teams.get(name)
+		if pteam then
+			minetest.chat_send_player(name, minetest.colorize(ctf_teams.team[pteam].color, "<" .. name .. "> ") .. message)
+		else
+			minetest.chat_send_player(name, "<" .. name .. "> " .. message)
+		end
+
+		return true
+	end
+end)
+
+-- Make sure muted player is muted by IP, which we can only get when they're online
+minetest.register_on_joinplayer(function(player)
+	local name = player:get_player_name()
+	local ip = minetest.get_player_ip(name)
+
+	if shadowmutes[name] then
+		if not shadowmutes[ip] then
+			shadowmutes[ip] = shadowmutes[name]
+		end
+
+		shadowmutes[name] = nil
+	end
+end)
+
 -- Disable IRC bot-command /whereis
 if irc then
 	irc.bot_commands["whereis"] = nil
@@ -183,7 +288,7 @@ ctf_report.send_report = function(msg)
 	old_send_report(msg)
 end
 
-local commands = {"kick", "ban", "tempban", "revoke"}
+local commands = {"kick", "ban", "tempban", "revoke", "shadowmute"}
 for _, cmd in pairs(commands) do
 	if minetest.registered_chatcommands[cmd] then
 		local oldcmdfunc = minetest.registered_chatcommands[cmd].func
