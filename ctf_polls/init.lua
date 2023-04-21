@@ -1,7 +1,3 @@
--- PRE-MERGE TODO
--- - Delete poll data after it's printed out
--- - Add a command to write the poll contents to a file (without deleting the poll data)
-
 local mods = minetest.get_mod_storage()
 local pollfolder = minetest.get_worldpath().."/ctf_polls/"
 
@@ -49,16 +45,64 @@ local function save_polls()
 end
 
 local polls = {
+--[[
 	{
-		name = "poison_grenadess",
-		desc = "Should poison grenades deal more damage?\nTesting1\nTesting2\nTesting3\nTesting4\nTesting5",
-		max_votes = 1,
+		name = "poll name",
+		desc = "Should x do y?\nMultiple lines\nAre supported\nbut try to use them sparingly",
+		max_votes = 2, -- How many options can be selected simultaneously
 		options = {
 			"Yes",
 			"No",
+			"With z",
+			"Without z",
 		}
 	},
+--]]
 }
+
+local function load_polls_file()
+	local found = false
+
+	for _, fname in pairs(minetest.get_dir_list(pollfolder, false)) do
+		if fname == "ctf_polls.conf" then
+			found = true
+			break
+		end
+	end
+
+	if not found then
+		return false, "Poll save file not found"
+	end
+
+	local file, err = io.open(pollfolder.."ctf_polls.conf", "r")
+
+	if file then
+		local data = file:read("*a")
+
+		file:close()
+
+		local table = minetest.deserialize(data)
+
+		if table then
+			polls = table
+		else
+			return false, "Failed to deserialize data"
+		end
+	else
+		return false, "Failed to load polls: "..dump(err)
+	end
+
+	return true
+end
+
+-- Load the polls file
+do
+	local success, err = load_polls_file()
+
+	if not success then
+		minetest.log("warning", "[ctf_polls]: "..err)
+	end
+end
 
 ---@param id table {name = playername, ip = playerip}
 local function get_saved_data(poll_name, id)
@@ -112,6 +156,78 @@ local function get_saved_data(poll_name, id)
 	end
 end
 
+local function save_poll_data(name)
+	minetest.log("Saving poll "..name.." to file...")
+	local file, err = io.open(pollfolder.."poll_"..name..".txt", "w")
+
+	if not file then
+		minetest.log("error", err)
+	else
+		-- Poll results for poll "<Pollname>""
+		-- \t	Option 1: x votes (x%)
+		-- \t	Option 2: x votes (x%)
+		-- ...
+		--
+		-- All player votes:
+		-- \t	ip: name, ip, name, ... | Votes: {Dumped options table}
+		-- \t	...
+
+		local total_votes = 0
+		local total_option_votes = {}
+
+		for relation, data in pairs(saved_polls[name]) do
+			if type(data) ~= "table" then -- 'relation' holds a 'pointer' name/ip, and 'data' is the ip storing the data
+				if not saved_polls[name][data].relations then
+					saved_polls[name][data].relations = {}
+				end
+
+				table.insert(saved_polls[name][data].relations, relation)
+			else
+				for i, vote in pairs(data.poll_votes) do
+					if not total_option_votes[i] then
+						total_option_votes[i] = 0
+					end
+
+					if vote then
+						total_option_votes[i] = total_option_votes[i] + 1
+						total_votes = total_votes + 1
+					end
+				end
+			end
+		end
+
+		file:write("Poll results for poll ", dump(name), "\n")
+
+		for option, count in ipairs(total_option_votes) do
+			file:write("\tOption ", option, ": ", count, " votes (", (count/total_votes) * 100, "%)\n")
+		end
+
+		file:write("All voting players:\n")
+
+		for ip, data in pairs(saved_polls[name]) do
+			if type(data) == "table" then
+				file:write("\t", ip, ": ", table.concat(data.relations, ", "), " | Votes: ", dump(data.poll_votes), "\n")
+			end
+		end
+
+		file:write("\n---!BEGIN DUMP!---\n", minetest.serialize(saved_polls[name]), "\n---!END DUMP!---\n")
+
+		saved_polls[name] = nil
+		save_polls()
+
+		for i, p in pairs(polls) do
+			if p.name == name then
+				table.remove(polls, i)
+				break
+			end
+		end
+
+		-- Need to update polls file
+
+		file:close()
+	end
+end
+
 for _, name in pairs(saved_poll_names) do
 	local found = false
 
@@ -123,62 +239,7 @@ for _, name in pairs(saved_poll_names) do
 	end
 
 	if not found then
-		minetest.log("Saving poll "..name.." to file...")
-		local file, err = io.open(pollfolder.."poll_"..name..".txt", "w")
-
-		if not file then
-			minetest.log("error", err)
-		else
-			-- Poll results for poll "<Pollname>""
-			-- \t	Option 1: x votes (x%)
-			-- \t	Option 2: x votes (x%)
-			-- ...
-			--
-			-- All player votes:
-			-- \t	ip: name, ip, name, ... | Votes: {Dumped options table}
-			-- \t	...
-
-			local total_votes = 0
-			local total_option_votes = {}
-
-			for relation, data in pairs(saved_polls[name]) do
-				if type(data) ~= "table" then -- 'relation' holds a 'pointer' name/ip, and 'data' is the ip storing the data
-					if not saved_polls[name][data].relations then
-						saved_polls[name][data].relations = {}
-					end
-
-					table.insert(saved_polls[name][data].relations, relation)
-				else
-					for i, vote in pairs(data.poll_votes) do
-						if not total_option_votes[i] then
-							total_option_votes[i] = 0
-						end
-
-						if vote then
-							total_option_votes[i] = total_option_votes[i] + 1
-							total_votes = total_votes + 1
-						end
-					end
-				end
-			end
-
-			file:write("Poll results for poll ", dump(name), "\n")
-
-			for option, count in ipairs(total_option_votes) do
-				file:write("\tOption ", option, ": ", count, " votes (", (count/total_votes) * 100, "%)\n")
-			end
-
-			file:write("All voting players:\n")
-
-			for ip, data in pairs(saved_polls[name]) do
-				if type(data) == "table" then
-					minetest.log(dump(ip).." - "..dump(data).." > "..dump(data.relations))
-					file:write("\t", ip, ": ", table.concat(data.relations, ", "), " | Votes: ", dump(data.poll_votes), "\n")
-				end
-			end
-
-			file:close()
-		end
+		save_poll_data(name)
 	end
 end
 
@@ -203,6 +264,10 @@ end
 
 local format = string.format
 local fieldsaves = {}
+
+minetest.register_on_leaveplayer(function(player)
+	fieldsaves[player:get_player_name()] = nil
+end)
 
 news_markdown.register_tab("Polls", function(name)
 	local form = ""
@@ -335,3 +400,36 @@ function(player, formname, fields)
 
 	return true
 end)
+
+minetest.register_chatcommand("save_poll", {
+	description = "End a poll and save it to file",
+	params = "<poll name>",
+	privs = {server = true},
+	func = function(name, poll)
+		if not poll or poll == "" then
+			return false, "Invalid poll name given"
+		end
+
+		if saved_polls[poll] then
+			save_poll_data(poll)
+
+			return true, "Saved and closed poll"
+		else
+			return false, "Poll '"..poll.."' not found"
+		end
+	end
+})
+
+minetest.register_chatcommand("load_polls", {
+	description = "Load the polls file",
+	privs = {server = true},
+	func = function(name)
+		local success, msg = load_polls_file()
+
+		if success then
+			return true, "Polls file loaded"
+		else
+			return false, msg
+		end
+	end
+})
