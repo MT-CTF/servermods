@@ -15,7 +15,10 @@ if irc then
 		return ("%s%s%s %s"):format(abrace, name, bbrace, message)
 	end
 
-	ctf_chat.send_me = function(name, message)
+	local old_send_me = ctf_chat.send_me
+	ctf_chat.send_me = function(name, message, ...)
+		old_send_me(name, message, ...)
+
 		local msg = irc.playerMessage(name, message)
 		local start_escape = msg:sub(1, msg:find("<")-1)
 
