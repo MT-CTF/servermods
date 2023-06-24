@@ -21,7 +21,7 @@ minetest.register_chatcommand("no_newplayers", {
 			elseif param:find("n") then
 				no_new_players = false
 				modstorage:set_int("no_new_players", 0)
-			elseif not param:find("s") and not param == "" then
+			elseif not param:find("s") and param ~= "" then
 				return false, minetest.colorize("#ad00af", "Usage: /no_newplayers [yes/no/show]")
 			end
 		end
