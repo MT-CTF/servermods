@@ -20,10 +20,13 @@ if irc then
 		old_send_me(name, message, ...)
 
 		local msg = irc.playerMessage(name, message)
-		local start_escape = msg:sub(1, msg:find("<")-1)
 
-		-- format is: \startescape < \endescape playername \startescape > \endescape
-		msg = msg:gsub("\15(.-)"..start_escape, "* %1"):gsub("[<>]", "")
+		if msg:match("^\x03%d-<") then
+			local start_escape = msg:sub(1, msg:find("<")-1)
+
+			-- format is: \startescape < \endescape playername \startescape > \endescape
+			msg = msg:gsub("\15(.-)"..start_escape, "* %1"):gsub("[<>]", "")
+		end
 
 		irc.say(msg)
 	end
