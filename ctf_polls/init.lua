@@ -291,7 +291,7 @@ news_markdown.register_tab("Polls", function(name)
 			end
 		end
 
-		form = format("%stextarea[0.1,%f;24,%f;;;%s]", form, posy, newlines * 0.4, minetest.formspec_escape(data.desc))
+		form = format("%stextarea[0.1,%f;24,%f;;;%s]", form, posy, newlines * 0.5, minetest.formspec_escape(data.desc))
 
 		for optionid, label in ipairs(data.options) do
 			if saved_data[optionid] ~= nil then
@@ -302,7 +302,7 @@ news_markdown.register_tab("Polls", function(name)
 
 			form = format("%s checkbox[0.6,%f;%d_%s_option%d%s;%s;%s]",
 				form,
-				posy + 0.2 + (newlines * 0.4) + (0.5 * (optionid-1)),
+				posy + 0.5 + (newlines * 0.5) + (0.8 * (optionid-1)),
 				pollid,
 				data.name,
 				optionid,
@@ -312,7 +312,7 @@ news_markdown.register_tab("Polls", function(name)
 			)
 		end
 
-		posy = posy + 0.5 + (newlines * 0.4) + (0.5 * #data.options)
+		posy = posy + 0.8 + (newlines * 0.5) + (0.8 * #data.options)
 	end
 
 	local form2 = (posy <= 14 and "" or
