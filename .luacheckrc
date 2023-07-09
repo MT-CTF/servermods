@@ -16,7 +16,7 @@ read_globals = {
 	string = {fields = {"split", "trim"}},
 	table = {fields = {"copy", "getn", "indexof"}},
 
-	"ctf_stats",
+	"ctf_stats", "mhud",
 	"filter",
 	"hud_score",
 	"dump",
