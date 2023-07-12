@@ -40,3 +40,19 @@ minetest.override_chatcommand("clearpassword", {
 		return old_clearpassword_func(name, param, ...)
 	end,
 })
+
+if filter then
+	minetest.register_on_mods_loaded(function()
+		local old_me_func = minetest.registered_chatcommands["me"].func
+		minetest.override_chatcommand("me", {
+			func = function(name, param, ...)
+				if not filter.check_message(name, param) then
+					filter.on_violation(name, param)
+					return false, "No swearing"
+				end
+
+				return old_me_func(name, param, ...)
+			end
+		})
+	end)
+end
