@@ -288,7 +288,7 @@ ctf_report.send_report = function(msg)
 	old_send_report(msg)
 end
 
-local commands = {"kick", "ban", "tempban", "revoke", "shadowmute"}
+local commands = {"kick", "ban", "unban", "tempban", "revoke", "shadowmute"}
 for _, cmd in pairs(commands) do
 	if minetest.registered_chatcommands[cmd] then
 		local oldcmdfunc = minetest.registered_chatcommands[cmd].func
