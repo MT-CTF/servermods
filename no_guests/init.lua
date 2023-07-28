@@ -10,7 +10,7 @@ local disallowed = {
 								"Please choose a proper username and try again.",
 	["[0-9].-[0-9].-[0-9].-[0-9].-[0-9]"]	=	"Too many numbers in your username. "..
 												"Please try again with less than five digits in your username.",
-	["^[A-Za-z]+[0-9][0-9][0-9]+$"] = "Please choice your own username. Usernames with letters then 3 or more digits are not allowed"
+	["^[A-Za-z]+[0-9][0-9][0-9]+$"] = "Please choose your own username. Usernames with letters then 3 or more digits are not allowed"
 }
 
 -- Original implementation (in Python) by sfan5
