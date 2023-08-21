@@ -1,7 +1,8 @@
--- local gettime = minetest.get_us_time
+local gettime = minetest.get_us_time
 
--- local queue = {}
--- local slows = {}
+local queue = {}
+local slows = {}
+local old_hitboxes = {}
 
 minetest.register_node("anti_blockspam:loading", {
 	description = "Visual-only node",
@@ -17,6 +18,7 @@ minetest.register_node("anti_blockspam:loading", {
 	},
 	use_texture_alpha = "clip",
 	paramtype = "light",
+	light_source = 5,
 	sunlight_propagates = true,
 	pointable = true,
 	diggable = false,
@@ -30,26 +32,61 @@ minetest.register_on_mods_loaded(function()
 				node_placement_prediction = "anti_blockspam:loading"
 			})
 
-			-- slows[name] = true
+			slows[name] = true
 		end
 	end
 
-	-- local old_is_protected = minetest.is_protected
+	local old_is_protected = minetest.is_protected
 
-	-- minetest.is_protected = function(pos, name, ...)
-	-- 	local time = gettime()
+	minetest.is_protected = function(pos, name, ...)
+		local time = gettime()
 
-	-- 	if queue[name] and time - queue[name] < 160000 then
-	-- 		return true
-	-- 	else
-	-- 		return old_is_protected(pos, name, ...)
-	-- 	end
-	-- end
+		if queue[name] and time - queue[name] < 160000 + ((minetest.get_player_information(name).avg_rtt or 0) * 5e5) then
+			return true
+		else
+			return old_is_protected(pos, name, ...)
+		end
+	end
 end)
 
--- local in_combat = ctf_combat_mode.in_combat
--- minetest.register_on_placenode(function(pos, newnode, placer)
--- 	if placer and placer:is_player() and slows[newnode.name] and in_combat(placer) and pos.y > placer:get_pos().y then
--- 		queue[placer:get_player_name()] = gettime()
--- 	end
--- end)
+local in_combat = ctf_combat_mode.in_combat
+local nodes = minetest.registered_nodes
+local HITBOX_CHECK_INTERVAL = 1
+
+local function check_hitbox(pname)
+	local player = minetest.get_player_by_name(pname)
+
+	if player then
+		local pos = player:get_pos()
+		if not in_combat(player) or (
+			not nodes[minetest.get_node(pos).name].walkable and not nodes[minetest.get_node(pos:offset(0, 1, 0)).name].walkable
+		) then
+			player:set_properties({selectionbox = old_hitboxes[pname]})
+			old_hitboxes[pname] = nil
+		else
+			minetest.after(HITBOX_CHECK_INTERVAL, check_hitbox, pname)
+		end
+	else
+		old_hitboxes[pname] = nil
+	end
+end
+
+local dist = vector.distance
+minetest.register_on_placenode(function(pos, newnode, placer)
+	if placer and placer:is_player() and in_combat(placer) then
+		local ppos = placer:get_pos()
+
+		if slows[newnode.name] and pos.y > ppos.y then
+			queue[placer:get_player_name()] = gettime()
+		end
+
+		if math.min(dist(pos, ppos), dist(pos, ppos:offset(0, 1, 0))) <= 0.9 then
+			local pname = placer:get_player_name()
+
+			old_hitboxes[pname] = placer:get_properties().selectionbox
+			placer:set_properties({selectionbox = {-0.51, 0.0, -0.51, 0.51, 1.9, 0.51}})
+			minetest.after(HITBOX_CHECK_INTERVAL, check_hitbox, pname)
+		end
+	end
+end)
+
