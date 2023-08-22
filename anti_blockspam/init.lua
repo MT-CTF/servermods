@@ -58,17 +58,17 @@ local function check_hitbox(pname)
 
 	if player then
 		local pos = player:get_pos()
-		if not in_combat(player) or (
-			not nodes[minetest.get_node(pos).name].walkable and not nodes[minetest.get_node(pos:offset(0, 1, 0)).name].walkable
+		if in_combat(player) or (
+			nodes[minetest.get_node(pos).name].walkable or nodes[minetest.get_node(pos:offset(0, 1, 0)).name].walkable
 		) then
-			player:set_properties({selectionbox = old_hitboxes[pname]})
-			old_hitboxes[pname] = nil
-		else
 			minetest.after(HITBOX_CHECK_INTERVAL, check_hitbox, pname)
+			return
 		end
-	else
-		old_hitboxes[pname] = nil
+
+		player:set_properties({selectionbox = old_hitboxes[pname]})
 	end
+
+	old_hitboxes[pname] = nil
 end
 
 local dist = vector.distance
@@ -89,4 +89,3 @@ minetest.register_on_placenode(function(pos, newnode, placer)
 		end
 	end
 end)
-
