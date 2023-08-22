@@ -41,7 +41,7 @@ minetest.register_on_mods_loaded(function()
 	minetest.is_protected = function(pos, name, ...)
 		local time = gettime()
 
-		if queue[name] and time - queue[name] < 160000 + ((minetest.get_player_information(name).avg_rtt or 0) * 5e5) then
+		if queue[name] and time - queue[name] < 160000 - ((minetest.get_player_information(name).avg_rtt or 0) * 5e5) then
 			return true
 		else
 			return old_is_protected(pos, name, ...)
@@ -51,7 +51,7 @@ end)
 
 local in_combat = ctf_combat_mode.in_combat
 local nodes = minetest.registered_nodes
-local HITBOX_CHECK_INTERVAL = 1
+local HITBOX_CHECK_INTERVAL = 0.6
 
 local function check_hitbox(pname)
 	local player = minetest.get_player_by_name(pname)
@@ -75,13 +75,14 @@ local dist = vector.distance
 minetest.register_on_placenode(function(pos, newnode, placer)
 	if placer and placer:is_player() and in_combat(placer) then
 		local ppos = placer:get_pos()
+		local pname = placer:get_player_name()
 
 		if slows[newnode.name] and pos.y > ppos.y then
-			queue[placer:get_player_name()] = gettime()
+			queue[pname] = gettime()
 		end
 
-		if math.min(dist(pos, ppos), dist(pos, ppos:offset(0, 1, 0))) <= 0.9 then
-			local pname = placer:get_player_name()
+		if not old_hitboxes[pname] and
+		math.min(dist(pos, ppos), dist(pos, ppos:offset(0, 1, 0))) <= 0.9 then
 
 			old_hitboxes[pname] = placer:get_properties().selectionbox
 			placer:set_properties({selectionbox = {-0.51, 0.0, -0.51, 0.51, 1.9, 0.51}})
