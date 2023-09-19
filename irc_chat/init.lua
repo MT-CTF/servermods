@@ -31,9 +31,12 @@ if irc then
 		irc.say(msg)
 	end
 
+	local old_announce = ctf_modebase.announce
 	ctf_modebase.announce = function(msg)
 		for m in msg:gmatch("[^\n]+") do
 			irc.say(m)
 		end
+
+		old_announce(msg)
 	end
 end
