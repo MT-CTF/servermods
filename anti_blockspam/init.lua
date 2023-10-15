@@ -81,10 +81,9 @@ minetest.register_on_placenode(function(pos, newnode, placer)
 		end
 
 		if not old_hitboxes[pname] and
-		math.min(dist(pos, ppos), dist(pos, ppos:offset(0, 1, 0))) <= 0.9 then
-
+		math.min(dist(pos, ppos), dist(pos, ppos:offset(0, 1, 0))) <= 0.6 then
 			old_hitboxes[pname] = placer:get_properties().selectionbox
-			placer:set_properties({selectionbox = {-0.51, 0.0, -0.51, 0.51, 1.9, 0.51}})
+			placer:set_properties({selectionbox = {-0.55, 0.0, -0.55, 0.55, 1.9, 0.55}})
 			minetest.after(HITBOX_CHECK_INTERVAL, check_hitbox, pname)
 		end
 	end
