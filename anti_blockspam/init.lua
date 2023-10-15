@@ -6,7 +6,6 @@ local old_hitboxes = {}
 
 minetest.register_node("anti_blockspam:loading", {
 	description = "Visual-only node",
-	drawtype = "glasslike",
 	tiles = {{
 		name = "anti_blockspam_loading.png",
 		animation = {
@@ -14,15 +13,15 @@ minetest.register_node("anti_blockspam:loading", {
 			aspect_w = 16,
 			aspect_h = 16,
 			length = 1.0,
-		}}
-	},
-	use_texture_alpha = "clip",
+		}
+	}},
 	paramtype = "light",
-	light_source = 5,
+	light_source = 4,
 	sunlight_propagates = true,
 	pointable = true,
 	diggable = false,
 	groups = {not_in_creative_inventory = 1},
+	climbable = true
 })
 
 minetest.register_on_mods_loaded(function()
