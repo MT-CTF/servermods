@@ -15,7 +15,7 @@
 	url = https://github.com/minetest-mods/filter
 [submodule "hud_notify"]
 	path = hud_notify
-	url = https://github.com/ClobberXD/hud_notify
+	url = https://github.com/MT-CTF/hud_notify.git
 [submodule "antispam"]
 	path = antispam
 	url = https://github.com/appgurueu/antispam
