@@ -8,6 +8,13 @@ minetest.override_chatcommand("admin", {
 	end
 })
 
+minetest.register_chatcommand("selfkick", {
+	description = "Kick yourself",
+	func = function(name)
+		minetest.kick_player(name, "Requested self-kick")
+	end
+})
+
 minetest.register_chatcommand("players", {
 	description = "List the players currently online",
 	func = function(name, param)
