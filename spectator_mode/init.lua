@@ -14,6 +14,10 @@ local function hide_player(player)
 		makes_footstep_sound = false
 	}
 
+	if player.set_observers then
+		player:set_observers({[player:get_player_name()] = true})
+	end
+
 	player:set_properties(prop)
 	player:set_armor_groups({ immortal = 1 })
 	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}, text = ""})
