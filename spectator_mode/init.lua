@@ -123,11 +123,12 @@ minetest.register_on_leaveplayer(function(player)
 end)
 
 minetest.register_on_joinplayer(function(player)
-	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
-		return
+	if minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
+		irc.send_join_part = false
+		hide_player(player)
+	else
+		irc.send_join_part = true
 	end
-
-	hide_player(player)
 end)
 
 local old_can_show = hpbar.can_show
