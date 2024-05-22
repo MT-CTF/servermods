@@ -133,7 +133,7 @@ local function join_player(player)
 	end
 end
 
-table.insert(minetest.registered_on_joinplayers[1], join_player(player))
+table.insert(minetest.registered_on_joinplayers, 1, join_player(player))
 
 local old_can_show = hpbar.can_show
 function hpbar.can_show(player, ...)
