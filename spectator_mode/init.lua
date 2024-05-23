@@ -166,6 +166,17 @@ function ctf_teams.allocate_player(player, on_join, ...)
 	end
 end
 
+local old_privs_func = minetest.registered_chatcommands["privs"].func
+minetest.registered_chatcommands["privs"].func = function(player, param)
+    if not player then return end
+
+    if param and minetest.check_player_privs(param, {spectator = true}) and not minetest.check_player_privs(player, {ban = true}) then
+        minetest.chat_send_player(player, "Privileges of " .. param .. ": vote, interact, shout")
+    else
+        return old_privs_func(player, param)
+    end
+end
+
 -- /whereis chat-command
 minetest.register_chatcommand("whereis", {
 	params = "<name>",
