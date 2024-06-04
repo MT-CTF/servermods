@@ -129,8 +129,6 @@ local function join_player(player)
 		irc.send_join_part = false
 
 		minetest.after(0, function() irc.send_join_part = old_join_part end)
-	else
-		irc.send_join_part = old_join_part
 	end
 end
 
