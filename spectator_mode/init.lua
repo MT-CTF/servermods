@@ -122,13 +122,17 @@ minetest.register_on_leaveplayer(function(player)
 	end
 end)
 
-minetest.register_on_joinplayer(function(player)
-	if not minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
-		return
-	end
+local function join_player(player)
+	local old_join_part = irc.send_join_part
+	if minetest.check_player_privs(player:get_player_name(), { spectate = true }) and irc.send_join_part == true then
+		hide_player(player)
+		irc.send_join_part = false
 
-	hide_player(player)
-end)
+		minetest.after(0, function() irc.send_join_part = old_join_part end)
+	end
+end
+
+table.insert(minetest.registered_on_joinplayers, 1, join_player)
 
 local old_can_show = hpbar.can_show
 function hpbar.can_show(player, ...)
@@ -158,6 +162,17 @@ local old_allocate_player = ctf_teams.allocate_player
 function ctf_teams.allocate_player(player, on_join, ...)
 	if not minetest.check_player_privs(PlayerName(player), {spectate=true}) then
 		return old_allocate_player(player, on_join, ...)
+	end
+end
+
+local old_privs_func = minetest.registered_chatcommands["privs"].func
+minetest.registered_chatcommands["privs"].func = function(player, param)
+	if not player then return end
+
+	if param and minetest.check_player_privs(param, {spectator = true}) and not minetest.check_player_privs(player, {ban = true}) then
+		minetest.chat_send_player(player, "Privileges of " .. param .. ": vote, interact, shout")
+	else
+		return old_privs_func(player, param)
 	end
 end
 
