@@ -8,6 +8,14 @@ minetest.override_chatcommand("admin", {
 	end
 })
 
+minetest.register_chatcommand("discord", {
+	description = "Join our Discord server!",
+	func = function(name)
+		minetest.chat_send_player(name, "Join our Discord server here: https://discord.gg/vcZTRPX")
+		return true
+	end,
+})
+
 minetest.register_chatcommand("selfkick", {
 	description = "Kick yourself",
 	func = function(name)
