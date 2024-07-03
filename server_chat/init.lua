@@ -7,15 +7,6 @@ minetest.override_chatcommand("admin", {
 		return true, "CTF was created by rubenwardy. The current admin/developer is LandarVargan.\nPlease use /report for any issues."
 	end
 })
-minetest.register_chatcommand("discord", {
-    params = "",
-    description = "Join our Discord server!",
-    func = function(name, param)
-        local discord_link = "https://discord.gg/gwrmgr4nfY"
-        local message = "Join our Discord server here: " .. discord_link
-        minetest.chat_send_player(name, message)
-    end,
-})
 
 
 minetest.register_chatcommand("selfkick", {
