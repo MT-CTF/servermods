@@ -53,15 +53,19 @@ local function format_duration(seconds)
 end
 
 minetest.register_chatcommand("playtime", {
-	params = "",
+	params = "[playername]",
 	description = S("See your total playtime on this server"),
-	func = function(name)
-		if minetest.get_player_by_name(name) then
+	func = function(name, player_name)
+		if player_name == "" then
+			player_name = name
+		end
+
+		if minetest.get_player_by_name(player_name) then
 			return true,
-				C("#63d437", "Total: ")..C("#ffea00", format_duration(playtime.get_total_playtime(name))).."\n"..
-				C("#63d437", "Current: ")..C("#ffea00", format_duration(playtime.get_session_playtime(name)))
+				C("#63d437", "Total: ")..C("#ffea00", format_duration(playtime.get_total_playtime(player_name))).."\n"..
+				C("#63d437", "Current: ")..C("#ffea00", format_duration(playtime.get_session_playtime(player_name)))
 		else
-			return false, S("You must be connected to run this command!")
+			return false, S("Player must be online to run this command!")
 		end
 	end,
 })

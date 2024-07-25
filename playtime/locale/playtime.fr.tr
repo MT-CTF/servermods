@@ -1,4 +1,5 @@
 # textdomain: playtime
-
+You must enter a existing player name!=Vous devez entrer un nom de joueur existant !
 You must be connected to run this command!=Vous devez être connecté pour utiliser cette commande !
 See your total playtime on this server=Voir votre temps de jeu total sur ce serveur
+Player must be online to run this command!=Le joueur doit être en ligne pour exécuter cette commande !
