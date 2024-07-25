@@ -57,8 +57,9 @@ minetest.register_chatcommand("playtime", {
 	description = S("See your total playtime on this server"),
 	func = function(name, player_name)
 		if player_name == "" then
-            player_name = name or "singleplayer"
-        end
+			player_name = name
+		end
+
 		if minetest.get_player_by_name(player_name) then
 			return true,
 				C("#63d437", "Total: ")..C("#ffea00", format_duration(playtime.get_total_playtime(player_name))).."\n"..
