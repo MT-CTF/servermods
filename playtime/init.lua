@@ -57,19 +57,13 @@ minetest.register_chatcommand("playtime", {
 	description = S("See your total playtime on this server"),
 	func = function(name, player_name)
 		if player_name == "" then
-            player_name = name
-			if minetest.is_singleplayer() then
-				player_name = "singleplayer"
-			end
+            player_name = name or "singleplayer"
         end
 		if minetest.get_player_by_name(player_name) then
 			return true,
 				C("#63d437", "Total: ")..C("#ffea00", format_duration(playtime.get_total_playtime(player_name))).."\n"..
 				C("#63d437", "Current: ")..C("#ffea00", format_duration(playtime.get_session_playtime(player_name)))
 		else
-			if not minetest.player_exists(player_name) then
-				return false, S("You must enter a existing player name!")
-			end
 			return false, S("Player must be online to run this command!")
 		end
 	end,
