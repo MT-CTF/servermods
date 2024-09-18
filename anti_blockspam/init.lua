@@ -39,7 +39,7 @@ minetest.register_on_mods_loaded(function()
 
 	minetest.is_protected = function(pos, name, ...)
 		local player = minetest.get_player_by_name(name)
-		if player:get_player_control().jump and player:get_look_dir().y <= -0.2 and pos.y >= player:get_pos().y+1.5 then
+		if player and player:get_player_control().jump and player:get_look_dir().y <= -0.2 and pos.y >= player:get_pos().y+1.5 then
 			return true
 		end
 
