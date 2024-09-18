@@ -38,6 +38,11 @@ minetest.register_on_mods_loaded(function()
 	local old_is_protected = minetest.is_protected
 
 	minetest.is_protected = function(pos, name, ...)
+		local player = minetest.get_player_by_name(name)
+		if player:get_player_control().jump and player:get_look_dir().y <= -0.2 and pos.y >= player:get_pos().y+1.5 then
+			return true
+		end
+
 		local time = gettime()
 
 		if queue[name] and (time - queue[name] < (200000 - ((minetest.get_player_information(name).avg_rtt or 0) * 5e5))) then
@@ -71,7 +76,7 @@ local function check_hitbox(pname)
 end
 
 local dist = vector.distance
-minetest.register_on_placenode(function(pos, newnode, placer)
+minetest.register_on_placenode(function(pos, newnode, placer, oldnode, itemstack, pointed_thing)
 	if placer and placer:is_player() and in_combat(placer) then
 		local ppos = placer:get_pos()
 		local pname = placer:get_player_name()
