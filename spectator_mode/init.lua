@@ -21,6 +21,22 @@ local function hide_player(player)
 	player:set_properties(prop)
 	player:set_armor_groups({ immortal = 1 })
 	player:set_nametag_attributes({color = {a = 0, r = 255, g = 255, b = 255}, text = ""})
+
+	ctf_modebase.update_playertags()
+end
+
+local old_get_allowed_nametag_observers = ctf_modebase.get_allowed_nametag_observers
+function ctf_modebase.get_allowed_nametag_observers(player)
+	local result = old_get_allowed_nametag_observers(player)
+
+	for _, p in pairs(minetest.get_connected_players()) do
+		local pn = p:get_player_name()
+		if minetest.check_player_privs(pn, { spectate = true }) then
+			result[pn] = "1"
+		end
+	end
+
+	return result
 end
 
 minetest.register_chatcommand("watch", {
@@ -123,12 +139,19 @@ minetest.register_on_leaveplayer(function(player)
 end)
 
 local function join_player(player)
-	local old_join_part = irc.send_join_part
-	if minetest.check_player_privs(player:get_player_name(), { spectate = true }) and irc.send_join_part == true then
+	if minetest.check_player_privs(player:get_player_name(), { spectate = true }) then
 		hide_player(player)
-		irc.send_join_part = false
 
-		minetest.after(0, function() irc.send_join_part = old_join_part end)
+		if ctf_map.current_map then
+			player:set_pos(vector.add(ctf_map.current_map.pos1, vector.divide(ctf_map.current_map.size, 2)))
+		end
+
+		if irc and irc.send_join_part == true then
+			local old_join_part = irc.send_join_part
+			irc.send_join_part = false
+
+			minetest.after(0, function() irc.send_join_part = old_join_part end)
+		end
 	end
 end
 
