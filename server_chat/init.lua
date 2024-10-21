@@ -37,6 +37,51 @@ minetest.register_chatcommand("players", {
 	end
 })
 
+-- quiet command
+
+local quiets = {}
+
+minetest.register_chatcommand("quiet", {
+	description = "Prevent a player from using capital letters (toggles state)",
+	params = "<player name>",
+	privs = {kick = true},
+	func = function(name, params)
+		if params and params ~= "" and minetest.get_player_by_name(params) then
+			local player_ip = minetest.get_player_ip(params)
+
+			if not quiets[player_ip] then
+				quiets[player_ip] = true
+
+				return true, "Player "..params.." is now quieted"
+			else
+				quiets[player_ip] = nil
+
+				return true, "Player "..params.." is now *un*-quieted"
+			end
+		else
+			return false, "Please provide the name of an online player"
+		end
+	end
+})
+
+minetest.register_on_chat_message(function(name, message, ...)
+	if message:sub(1,1) == "/" then return end
+
+	if quiets[minetest.get_player_ip(name)] then
+		local new = string.lower(message)
+
+		if new == message then
+			return
+		else
+			for _, func in pairs(minetest.registered_on_chat_messages) do
+				local out = func(name, new, ...)
+
+				if out then return out end
+			end
+		end
+	end
+end)
+
 -- Shadowmute command
 
 local shadowmutes = {}
