@@ -25,3 +25,9 @@
 [submodule "markdown2formspec"]
 	path = markdown2formspec
 	url = https://github.com/ExeVirus/markdown2formspec.git
+[submodule "nextgen_fungi"]
+	path = nextgen_fungi
+	url = https://github.com/starninjas/nextgen_fungi
+[submodule "redef"]
+	path = redef
+	url = https://git.0x7be.net/dirk/redef
