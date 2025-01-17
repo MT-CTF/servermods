@@ -33,6 +33,7 @@ if irc then
 
 	local old_announce = ctf_modebase.announce
 	ctf_modebase.announce = function(msg)
+		msg = minetest.get_translated_string("en", msg)
 		for m in msg:gmatch("[^\n]+") do
 			irc.say(m)
 		end
