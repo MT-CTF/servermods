@@ -10,7 +10,7 @@ globals = {
 	"ctf_map",
 
 	"ctf_report", "ctf_modebase", "ctf_chat", "ctf_teams", "ctf_combat_mode",
-	"irc", "hpbar",
+	"discord", "hpbar",
 	"PlayerName",
 }
 

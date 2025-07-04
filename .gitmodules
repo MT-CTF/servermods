@@ -4,12 +4,6 @@
 [submodule "sauth"]
 	path = sauth
 	url = https://github.com/shivajiva101/sauth/
-[submodule "irc"]
-	path = irc
-	url = https://github.com/minetest-mods/irc
-[submodule "irc_commands"]
-	path = irc_commands
-	url = https://github.com/MT-CTF/irc_commands
 [submodule "filter"]
 	path = filter
 	url = https://github.com/minetest-mods/filter
@@ -25,3 +19,6 @@
 [submodule "markdown2formspec"]
 	path = markdown2formspec
 	url = https://github.com/ExeVirus/markdown2formspec.git
+[submodule "discordmt"]
+	path = discordmt
+	url = https://github.com/MT-CTF/discordmt.git
