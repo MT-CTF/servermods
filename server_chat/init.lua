@@ -27,13 +27,15 @@ minetest.register_chatcommand("players", {
 	description = "List the players currently online",
 	func = function(name, param)
 		local players = minetest.get_connected_players()
-		local out = #players .. " player(s) online: "
+		local playerlist = {}
 
 		for _, p in pairs(players) do
-			out = out .. p:get_player_name() .. ", "
+			if not core.check_player_privs(p, {spectate = true}) then
+				table.insert(playerlist, p:get_player_name())
+			end
 		end
 
-		return true, out:sub(1, -3)
+		return true, #playerlist .. " player" .. ((#playerlist > 1) and "s" or "") .. " online: " .. table.concat(playerlist, ", ")
 	end
 })
 

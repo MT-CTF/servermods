@@ -3,14 +3,14 @@ allow_defined_top = true
 max_line_length = 999
 
 globals = {
-	"minetest",
+	"minetest", "core",
 
 	"news_markdown",
 
 	"ctf_map",
 
 	"ctf_report", "ctf_modebase", "ctf_chat", "ctf_teams", "ctf_combat_mode",
-	"discord", "hpbar",
+	"discord", "irc", "hpbar",
 	"PlayerName",
 }
 

@@ -220,3 +220,20 @@ minetest.register_chatcommand("whereis", {
 				pos.x, pos.y, pos.z)
 	end
 })
+
+local old_get_status = core.get_server_status
+minetest.register_on_mods_loaded(function()
+	function core.get_server_status(...)
+		local str = old_get_status(...)
+		local players = minetest.get_connected_players()
+		local playerlist = {}
+
+		for _, p in pairs(players) do
+			if not core.check_player_privs(p, {spectate = true}) then
+				table.insert(playerlist, p:get_player_name())
+			end
+		end
+
+		return str:match("(.-| )clients:") .. #playerlist .. " player" .. ((#playerlist > 1) and "s" or "") .. ": " .. table.concat(playerlist, ", ")
+	end
+end)
