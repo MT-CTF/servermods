@@ -213,29 +213,37 @@ end
 
 -- Staff Channel
 
+local ongoing = nil
 local function grab_staff_messages()
-	http.fetch({
-		url = "localhost:31337",
-		timeout = 10,
-		method = "GET",
-	}, function(res)
-		if res.data == "" then return end
+	if not ongoing then
+		ongoing = http.fetch_async({
+			url = "localhost:31337",
+			timeout = 9,
+			method = "GET",
+		})
+	else
+		local res = http.fetch_async_get(ongoing)
 
-		local messages = minetest.parse_json(res.data)
+		if res.completed then
+			ongoing = nil
+			if res.data == "" then return end
 
-		if messages and type(messages) == "table" and #messages > 0 then
-			minetest.log("action", "[server_chat]: Sending messages sent from Discord: " .. dump(messages))
+			local messages = minetest.parse_json(res.data)
 
-			local msg = ""
-			for _, m in pairs(messages) do
-				msg = msg .. "[STAFF]: " .. m .. "\n"
-			end
+			if messages and type(messages) == "table" and #messages > 0 then
+				minetest.log("action", "[server_chat]: Sending messages sent from Discord: " .. dump(messages))
 
-			for toname in pairs(ctf_report.staff) do
-				minetest.chat_send_player(toname, minetest.colorize("#ffcc00", msg))
+				local msg = ""
+				for _, m in pairs(messages) do
+					msg = msg .. "[STAFF]: " .. m .. "\n"
+				end
+
+				for toname in pairs(ctf_report.staff) do
+					minetest.chat_send_player(toname, minetest.colorize("#ffcc00", msg))
+				end
 			end
 		end
-	end)
+	end
 
 	minetest.after(5, grab_staff_messages)
 end
@@ -262,7 +270,7 @@ local function send_staff_message(msg, prefix, discord_prefix, discord_webhook, 
 
 	-- Send to discord
 	if http and minetest.settings:get(discord_webhook) then
-		http.fetch({
+		http.fetch_async({
 			method = "POST",
 			url = minetest.settings:get(discord_webhook),
 			extra_headers = {"Content-Type: application/json"},
@@ -272,7 +280,7 @@ local function send_staff_message(msg, prefix, discord_prefix, discord_webhook, 
 				avatar_url = "https://cdn.discordapp.com/avatars/447857790589992966/7ab615bae6196346bac795e66ba873dd.png",
 				content = msg,
 			}),
-		}, function() end)
+		})
 	else
 		minetest.log("warning", "[server_chat] Discord webhook isn't configured. http is "..(http and "enabled" or "not enabled")..". Webhook is "..dump(minetest.settings:get(discord_webhook)))
 	end
