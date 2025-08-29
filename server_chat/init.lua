@@ -218,13 +218,13 @@ local function grab_staff_messages()
 	if not ongoing then
 		ongoing = http.fetch_async({
 			url = "localhost:31337",
-			timeout = 9,
+			timeout = 10,
 			method = "GET",
 		})
 	else
 		local res = http.fetch_async_get(ongoing)
 
-		if res.completed then
+		if res.completed == true then
 			ongoing = nil
 			if res.data == "" then return end
 
@@ -245,7 +245,7 @@ local function grab_staff_messages()
 		end
 	end
 
-	minetest.after(5, grab_staff_messages)
+	minetest.after(3, grab_staff_messages)
 end
 
 -- Grabs messages from CTF bot's !x <message>
