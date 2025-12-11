@@ -1,9 +1,6 @@
 [submodule "sban"]
 	path = sban
 	url = https://github.com/shivajiva101/sban
-[submodule "sauth"]
-	path = sauth
-	url = https://github.com/shivajiva101/sauth/
 [submodule "filter"]
 	path = filter
 	url = https://github.com/minetest-mods/filter
