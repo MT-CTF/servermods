@@ -214,10 +214,11 @@ end
 -- Staff Channel
 
 local ongoing = nil
+local host = core.settings:get("server_chat_discord_relay_host") or "127.0.0.1"
 local function grab_staff_messages()
 	if not ongoing then
 		ongoing = http.fetch_async({
-			url = "localhost:31337",
+			url = host .. ":31337",
 			timeout = 10,
 			method = "GET",
 		})
