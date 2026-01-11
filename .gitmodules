@@ -18,4 +18,4 @@
 	url = https://github.com/ExeVirus/markdown2formspec.git
 [submodule "discordmt"]
 	path = discordmt
-	url = git@github.com:MT-CTF/discordmt.git
+	url = https://github.com/MT-CTF/discordmt.git
